@@ -15,7 +15,12 @@
 			  if ($("#entertainchange_1").val() > 0) {
 				  $.post(MyAjax.ajaxurl, data, function(response) {
 					$('#entertain_bankit_result').html(response);
-				  });
+				  })
+				.done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});				  
 			  } else {
 				return false;
 			  }			  
@@ -36,7 +41,12 @@
 			  if ($("#grocerychange_1").val() > 0) {
 				  $.post(MyAjax.ajaxurl, data, function(response) {
 					$('#grocerybankit_result').html(response);
-				  });
+				  })
+				.done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});				  
 			  } else {
 				return false;
 			  }			  
@@ -59,7 +69,12 @@
 			  if ($("#heatingchange_3").val() > 0) {
 				  $.post(MyAjax.ajaxurl, data, function(response) {
 					$('#lightingbankit_result').html(response);
-				  });
+				  })
+				.done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});				  
 			  } else {
 				return false;
 			  }			  
@@ -75,14 +90,20 @@
 				resourcetype: 'heating-2',			
 				userid: $("#userid").val(),
 				month: $("#month4").val(),
-				year: $("#year4").val()				
+				year: $("#year4").val(),
+				state: $("#state_electric option:selected").text()
 			  };
 			 
 			  // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 			  if ($("#heatingchange_3").val() > 0) {
 				  $.post(MyAjax.ajaxurl, data, function(response) {
 					$('#heatingbankit_result').html(response);
-				  });
+				  })
+				.done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});				  
 			  } else {
 				return false;
 			  }			  
@@ -98,14 +119,20 @@
 				resourcetype: 'cooling-2',
 				userid: $("#userid").val(),
 				month: $("#month4").val(),
-				year: $("#year4").val()				
+				year: $("#year4").val()	,
+				state: $("#state_electric option:selected").text()				
 			  };
 			 
 			  // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 			  if ($("#coolingchange_3").val() > 0) {
 				  $.post(MyAjax.ajaxurl, data, function(response) {
 					$('#coolingbankit_result').html(response);
-				  });
+				  })
+				.done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});				  
 			  } else {
 				return false;
 			  }
@@ -130,7 +157,12 @@
 			if ($("#watersaved_1").val() > 0) {
 				  $.post(MyAjax.ajaxurl, data, function(response) {
 					$('#waterbankit_result').html(response);
-				  });
+				  })
+				.done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});
 			  } else {
 				return false;
 			  }			  
@@ -156,11 +188,81 @@
 				if ($("#transsaved_0").val() > 0) {
 					  $.post(MyAjax.ajaxurl, data, function(response) {
 						$('#transbankit_result').html(response);
-					  });
+					  })
+					  .done(function() {
+						alert('Your savings have been updated!');
+						window.name = "TAB2";
+						location.reload(true);
+					});
 				  } else {
 					return false;
 				  }				  
 				});	
+				
+			$("#appliance_bankit").click(function(event){	
+		
+			  var data = {
+				action: 'my_action',
+				security : MyAjax.security,
+				amount: $("#appliancechange_1").val(), 
+				savingstype: 'appliance',
+				resourceamount: $("#appliancechange_2").val(),
+				resourcetype: 'appliance-2',
+				userid: $("#userid").val(),
+				month: $("#month4").val(),
+				year: $("#year4").val(),
+				state: $("#state_electric option:selected").text()				
+			  };
+			 
+			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+			if ($("#appliancechange_1").val() > 0) {
+				  $.post(MyAjax.ajaxurl, data, function(response) {
+					$('#appliancebankit_result').html(response);
+				  })
+				  .done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});
+			  } else {
+				return false;
+			  }			  
+			});					
+				
+			$("#recycling_bankit").click(function(event){	
+		
+			  var data = {
+				action: 'my_action',
+				security : MyAjax.security,
+				amount: $("#recyclingchange_1").val(), 
+				savingstype: 'recycling',
+				userid: $("#userid").val(),
+				month: $("#month4").val(),
+				year: $("#year4").val()		
+			  };
+			 
+			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+			if ($("#recyclingchange_1").val() > 0) {
+				  $.post(MyAjax.ajaxurl, data, function(response) {
+					$('#recycling_bankit_result').html(response);
+				  })
+				  .done(function() {
+					alert('Your savings have been updated!');
+					window.name = "TAB2";
+					location.reload(true);
+				});
+			  } else {
+				return false;
+			  }			  
+			});					
+				
+				
+				
+				
+				
+				
+				
+				
 
 
 			//THE FOLLOWING ARE CLICK FUNCTIONS TO SAVE BASELINE INPUTS
@@ -272,6 +374,21 @@
 			  $.post(MyAjax.ajaxurl, data, function(response) {				
 			  });
 			});
+			
+			$("#appliance_base").click(function(event){
+			  var data = {
+				action: 'my_base',
+				security : MyAjax.security,
+				B1: $("#appliance_1").val(), 
+				B2: $("#appliancebaseline_1").val(), 
+				baselinetype: 'appliance',
+				userid: $("#userid").val()
+			  };
+			 
+			  // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+			  $.post(MyAjax.ajaxurl, data, function(response) {				
+			  });
+			});			
 
 			$("#changetime").click(function() {
 				var dte = '?themonth=' + $("#month").val() + '&monthname=' + $('#month option:selected').html() + '&theyear=' + $("#year").val() + '#tab-M';

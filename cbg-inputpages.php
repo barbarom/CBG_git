@@ -28,7 +28,16 @@ function cbg_add_inputs() {
 <script type="text/javascript">
 jQuery(document).ready(function ($) {
 	$( document ).tooltip();
-
+	$("#water_shortcut").click(function () {
+		$("#water_3").val(.006);
+	});
+	$('#electric_heat_cb').change(function () {
+        if (!this.checked) {
+            $('#electric_heat_div').fadeOut('slow');
+		} else {
+            $('#electric_heat_div').fadeIn('slow');
+		}
+    });
 });
 </script>
 <?php
@@ -49,6 +58,8 @@ jQuery(document).ready(function ($) {
 		}		
 		
 		$old_entertainmentrecreation = "";
+		$old_appliance = "";
+		$old_recycling = "";
 		$old_cooling = "";
 		$old_heating = "";
 		$old_groceryshopping = "";
@@ -76,6 +87,8 @@ jQuery(document).ready(function ($) {
 		
 		$totsavings = 0;
 		$totentertainmentrecreation = 0;
+		$totappliance = 0;
+		$totrecycling = 0;
 		$totheating = 0;
 		$totcooling = 0;
 		$totgrocery = 0;
@@ -108,7 +121,13 @@ jQuery(document).ready(function ($) {
 				} elseif($savingstype->slug == "water") {
 					$old_water = $postamount;	
 					$totwater = $totwater + floatval($postamount);
-				}					
+				} elseif($savingstype->slug == "appliance") {
+					$old_appliance = $postamount;	
+					$totappliance = $totappliance + floatval($postamount);
+				} elseif($savingstype->slug == "recycling") {
+					$old_recycling = $postamount;	
+					$totrecycling = $totrecycling + floatval($postamount);
+				}						
 			}			
 			$totsavings = $totsavings + floatval($postamount);			
 		endforeach; 
@@ -165,7 +184,10 @@ jQuery(document).ready(function ($) {
 		if ($pagename == 'entertainment') {
 			$pagename = 'entertainmentrecreation';
 		}
-		
+		if ($pagename == 'appliances') {
+			$pagename = 'appliance';
+		}
+
 		$B1 = "";
 		$B2 = "";
 		$B3 = "";
@@ -224,9 +246,9 @@ jQuery(document).ready(function ($) {
 			
 			<p class="inputs"><strong>How many miles does your car travel per gallon (mpg)?  </strong> <input type="text" id="trans_3" style="width:50px;" title="When you fill up, reset your odometer.  When your tank is empty again, see how many miles you've gone.  Divide the miles by the number of gallons it took to refill your tank.  Or you could research this info online for the average MPG of your car's make and model." value="<?php echo $B3 ?>"/><span class="errmsg" id="errmsg3"></span><br />
 			
-			<p class="inputs"><strong>What is the average price of gas in your area?</strong> $  <input type="text" id="trans_4" style="width:50px;" title="This information can usually be found on the Internet (www.gasbuddy.com)" value="<?php echo $B4 ?>"/><span class="errmsg" id="errmsg4"></span> per gallon.<br />
+			<p class="inputs"><strong>What is the average price of gas in your area?</strong> $  <input type="text" id="trans_4" style="width:50px;" title="This information can usually be found on the Internet (www.gasbuddy.com)" value="<?php echo $B4 ?>"/><span class="errmsg" id="errmsg4"></span> per gallon.<br />Short cut: Find average gas prices in your location by using one of the following websites: <a href="http://fuelgaugereport.aaa.com/todays-gas-prices/" target="_blank">AAA</a> or <a href="http://www.gasbuddy.com/" target="_blank">GasBuddy</a>.
 			
-		<br />
+		<br /><br /><br />
 		<input id="trans_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcTransportation()" /><span class="errmsg" id="errmsg5"></span>
 		<br />
 		<div class="baselinediv1" id="baselineresults">
@@ -433,7 +455,7 @@ jQuery(document).ready(function ($) {
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
 			<p class="inputs"><strong>How many showers do you take per month?</strong><input type="text" id="water_1" value="<?php echo $B1 ?>" title="Remember: this question is simply trying to help you get a handle on your resource usage; your answer does not have to be exact.  Many people, for instance, shower at least once a day [e.g. before work or school in the morning], and many people exercise a consistent number of days a week [and often take showers after a workout].  These 'habits' or 'markers' should make it pretty simple to approximate how many showers you take per month." style="width:50px;" /><span class="errmsg" id="errmsg1"></span><br /></p>
 			<p class="inputs"><strong>On average, how many minutes do you spend in the shower?  </strong> <input type="text" id="water_2" title="Time your showers for the next several days and divide the total minutes by the number of days.  For instance, if you spent a total of 60 minutes in the shower over five days, your average shower time would be ten minutes." value="<?php echo $B2 ?>" style="width:50px;" /><span class="errmsg" id="errmsg2"></span><br />
-			<p class="inputs"><strong>What does one gallon of water cost from your utility?    </strong> $<input type="text" id="water_3" value="<?php echo $B3 ?>" title="Most water utilities charge a fixed amount for the first 1,000 gallons (i.e. from 1-1,000).  In Batesville, AR, for instance, the minimum fee is $8.50.  For every thousand gallons consumed after you cross the 1,000 threshold, the utility will assess a fee.  For example, in Batesville, it is $3.27 per 1,000 gallons.  So, to take a hypothetical example, let’s say you used 14,500 gallons of water in one month.  The first 1,000 gallons would cost $8.50.  Then, the remaining 13,500 gallons would cost $44.15 (13.5x$3.27).  The total water bill would be $52.65 ($8.50 minimum + $44.15). To find the amount your utility charges per gallon of water, simply divide your total bill (in this case, $52.65), by the number of total gallons used (in this case, 14,500) to get your answer--.0036 or 4/10 of a cent." style="width:50px;" /><span class="errmsg" id="errmsg3"></span><a id="water_shortcut" href="#" title="Source: http://www.epa.gov/watersense/our_water/how_works.html#inputs">Short cut: use national average of $.006</a></p>
+			<p class="inputs"><strong>What does one gallon of water cost from your utility?    </strong> $<input type="text" id="water_3" value="<?php echo $B3 ?>" title="Most water utilities charge a fixed amount for the first 1,000 gallons (i.e. from 1-1,000).  In Batesville, AR, for instance, the minimum fee is $8.50.  For every thousand gallons consumed after you cross the 1,000 threshold, the utility will assess a fee.  For example, in Batesville, it is $3.27 per 1,000 gallons.  So, to take a hypothetical example, let’s say you used 14,500 gallons of water in one month.  The first 1,000 gallons would cost $8.50.  Then, the remaining 13,500 gallons would cost $44.15 (13.5x$3.27).  The total water bill would be $52.65 ($8.50 minimum + $44.15). To find the amount your utility charges per gallon of water, simply divide your total bill (in this case, $52.65), by the number of total gallons used (in this case, 14,500) to get your answer--.0036 or 4/10 of a cent." style="width:50px;" /><span class="errmsg" id="errmsg3"></span><input type="button" id="water_shortcut" value="Use Shortcut" /><br />Short cut: use national average of $.006 (Source: <a href="http://www.epa.gov/watersense/our_water/how_works.html#inputs" target="_blank">EPA guidelines</a>)</p>
 		<br />
 		<input id="water_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcWater()" /><span class="errmsg" id="errmsg5"></span>
 		<br />
@@ -646,6 +668,10 @@ jQuery(document).ready(function ($) {
 		<br/><br/>
 		<input type="radio" name="cooling75" value="yes" />Yes<br />
 		<input type="radio" name="cooling75" value="no" />No<br /><br />
+		<?php
+			cbg_state_dropdown();
+		?>
+		<br /><br />
 		<span class="errmsg" id="errmsg5"></span></p>
 		<p><input type="button" id="cooling_bankit" name="cooling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcCoolingSavings()" /><span class="errmsg" id="errmsg6"></span></p><br />
 		<div class="baselinediv2" id="baselineresults">
@@ -654,7 +680,8 @@ jQuery(document).ready(function ($) {
 				<div><strong>Cooling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="coolingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totcooling); ?></span></div>		
 				<br /><br />
 				<a href="#" id="clickcoolingass1">Our assumptions</a><div id="coolingass1" style="display:none;margin-top:15px;">After consulting several sources, including the Department of Energy, we concluded that a person can expect—on average--to lower his/her utility bill by 3% if the temperature remains above 75 degrees or 1% if below 75 degrees.</div></p>
-				<div id="coolingbankit_result"></div>			
+				<div id="coolingbankit_result"></div>	
+				<input type="hidden" id="coolingchange_1" />
 			
 		</div>	
 	<?php } else {
@@ -763,6 +790,11 @@ jQuery(document).ready(function ($) {
 					}
 					
 					jQuery("#coolingchange_3").val(C3);
+					var stateprice = jQuery("#state_electric").val()/100;
+					
+					var kwh = jQuery("#coolingchange_3").val()/stateprice;
+					
+					jQuery("#coolingchange_1").val(kwh);					
 				}
 				
 		   }
@@ -793,6 +825,13 @@ jQuery(document).ready(function ($) {
 		<?php if ( is_user_logged_in() ) { ?>
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">This month I lowered my thermostat setting by an average of <input id="heating_5" style="width:50px;" /> degrees Fahrenheit. <span class="errmsg" id="errmsg5"></span></p>
+		<input type="checkbox" id="electric_heat_cb" /> Check box if using electric heat.
+		<div id="electric_heat_div" style="display:none;">
+		<?php
+			cbg_state_dropdown();
+		?>
+		</div>
+		<br /><br />
 		<p><input type="button" id="heating_bankit" name="heating_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcHeatingSavings()" /><span class="errmsg" id="errmsg6"></span></p><br />
 		<div class="baselinediv2" id="baselineresults">
 		<h1>HEATING SAVINGS</h1><br /><br />		
@@ -801,7 +840,8 @@ jQuery(document).ready(function ($) {
 			<div><strong>Heating money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="heatingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totheating); ?></span></div>				
 			<br /><br />
 			<a href="#" id="clickheatingass1">Our assumptions</a><div id="heatingass1" style="display:none;margin-top:15px;">According to several sources, including the Department of Energy, a person can expect to lower his/her utility bill (models account for various types of heating sources, i.e. electric heat pumps, natural gas) by 1%-3% per degree change.  We use the mean— 2% per degree change.</div></p>
-			<div id="heatingbankit_result"></div>		
+			<div id="heatingbankit_result"></div>	
+			<input type="hidden" id="heatingchange_1" />
 		</div>	
 	<?php } else {
 		echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
@@ -894,11 +934,15 @@ jQuery(document).ready(function ($) {
 					// jQuery("#heatingchange_1").val(C1);
 					// var C2 = ((jQuery("#heating_4").val() - jQuery("#heating_2").val()) / jQuery("#heating_3").val()).toFixed(4);
 					// jQuery("#heatingchange_2").val(C2);
-					// var C3 = (jQuery("#heatingchange_1").val() * jQuery("#heatingchange_2").val()).toFixed(2);
+					//var C3 = (jQuery("#heatingchange_1").val() * jQuery("#heatingchange_2").val()).toFixed(2);
 					
 					var C3 = (jQuery("#heating_4").val() - jQuery("#heating_2").val()) * jQuery("#heating_5").val() * 0.02;
 					
 					jQuery("#heatingchange_3").val(C3);
+					
+					var stateprice = jQuery("#state_electric").val()/100;
+					var kwh = jQuery("#heatingchange_3").val()/stateprice;
+					jQuery("#heatingchange_1").val(kwh);
 				}
 			
 		   }
@@ -1303,6 +1347,181 @@ jQuery(document).ready(function ($) {
    </script>
 <?php	
 	}
+	
+elseif (is_page( 'appliances' )) {
+?>
+<p class="pagetitles">CHANGE: APPLIANCES</p>
+<div id="tabs8">
+  <ul>
+    <li><a href="#tabs-15"><strong>What's your Baseline?</strong></a></li>
+    <li><a href="#tabs-16"><strong>Track your Savings</strong></a></li>    
+  </ul>
+	<div id="tabs-15">	
+		<p class="inputs"><strong>How much does it cost to run your current refrigerator?</strong></p>
+		<p>Use the following website to calculate the annual cost of running your refrigerator. Put the yearly cost in the box below. <a href="https://www.energystar.gov/index.cfm?fuseaction=refrig.calculator" target="_blank">Energy Star Calculator</a></p>
+		<br /><br />
+		<p class="inputs"><strong>Annual Cost of Refrigerator: </strong>$<input type="text" id="appliance_1" value="<?php echo $B1 ?>" /><span class="errmsg" id="errmsg1"></span></p>
+		<br />
+		<input id="appliance_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcAppliance()" /><span class="errmsg" id="errmsg5"></span>
+		<br />
+		<div class="baselinediv1" id="baselineresults">
+		<h1>BASELINE</h1><br /><br />
+			You spend $<input id="appliancebaseline_1" style="width:50px;font-weight:bold;" value="<?php echo $B2 ?>" readonly /> per month.		
+			 
+		</div>			
+	</div>
+	<div id="tabs-16">
+		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
+		<p class="inputs">I replaced my current/older refrigerator with an energy star refrigerator. Use the <a href="https://www.energystar.gov/index.cfm?fuseaction=refrig.calculator" target="_blank">Energy Star Calculator</a> to figure the new annual cost.</p><br />
+		<p class="inputs"><strong>The new estimated annual cost to run my new refrigerator is:</strong> $<input id="appliance_2" /><span class="errmsg" id="errmsg2"></span></p><br />
+		<p>
+		<?php
+			cbg_state_dropdown();
+		?>		
+		</p><br /><br />
+		<p><input type="button" id="appliance_bankit" name="appliance_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcApplianceSavings()" /><span class="errmsg" id="errmsg3"></span></p><br />		
+		<div class="baselinediv2" id="baselineresults">
+		<h1>APPLIANCE SAVINGS</h1><br /><br />		
+			<div><strong>Appliance money saved each month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="appliancechange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totappliance); ?></span></div>				
+
+				
+				<div id="appliance_bankit_result"></div>
+				<input type="hidden" id="appliancechange_2" />
+		</div>
+   
+	</div>
+</div>
+<?php cbg_tool_dropdown(); ?>
+
+
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {				
+		
+			if (window.name == "TAB2") {
+				$( "#tabs8" ).tabs({ active: 1 });
+			} else {
+				$( "#tabs8" ).tabs({ active: 0 });
+			}							
+		
+		
+		  $("#appliance_1").on("keyup", function(){
+			var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
+				val = this.value;			
+			if(!valid){
+			this.value = val.substring(0, val.length - 1);
+				$("#errmsg1").html("Currency Only").show().fadeOut(2000);
+					   return false;					
+			}
+			});		
+		  $("#appliance_2").on("keyup", function(){
+			var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
+				val = this.value;			
+			if(!valid){
+			this.value = val.substring(0, val.length - 1);
+				$("#errmsg2").html("Currency Only").show().fadeOut(2000);
+					   return false;					
+			}
+			});				
+				
+	   });
+			
+		function calcAppliance() {
+				if (jQuery("#appliance_1").val().length === 0 ) {
+					jQuery("#errmsg1").html("Please fill in this field.");
+					return false;
+				} else {
+					var C1 = jQuery("#appliance_1").val()/12;
+					jQuery("#appliancebaseline_1").val(C1);
+				}
+		}
+	   
+		function calcApplianceSavings() {
+				if (jQuery("#appliance_2").val().length === 0 ) {
+					jQuery("#errmsg2").html("Please fill in this field.");
+					return false;
+				} else {
+					var C1 = jQuery("#appliance_2").val()/12;
+					var C2 = (jQuery("#appliance_1").val()/12)-C1;
+					jQuery("#appliancechange_1").val(C2);
+					
+					var stateprice = jQuery("#state_electric").val()/100;
+					var kwh = C2/stateprice;
+					jQuery("#appliancechange_2").val(kwh);	
+					
+					
+				}			
+		}
+   </script>
+<?php	
+	}	
+	
+elseif (is_page( 'recycling' )) {
+?>
+<p class="pagetitles">CHANGE: RECYCLING</p>
+<div id="tabs9">
+  <ul>
+    <li><a href="#tabs-17"><strong>What's your Baseline?</strong></a></li>
+    <li><a href="#tabs-18"><strong>Track your Savings</strong></a></li>    
+  </ul>
+	<div id="tabs-17">	
+		<p class="ptext">Many people live in cities that do not provide curbside recycling.  Or, even if they DO have such an option, they still use recycling centers.  There is no need for a baseline measure for this part of our tool.  Start recycling!  Help the planet and save some money at the same time.</p>
+
+	</div>
+	<div id="tabs-18">
+		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
+		
+
+		<p class="inputs">I took my recyclable materials to a local recycling center and received $ <input id="recycling_1" /> <span class="errmsg" id="errmsg1"></span><br />
+
+		<p><input type="button" id="recycling_bankit" name="recycling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcRecyclingSavings()" /><span class="errmsg" id="errmsg5"></span></p><br />		
+		<div class="baselinediv2" id="baselineresults">
+		<h1>RECYCLING SAVINGS</h1><br /><br />		
+			<div><strong>Recycling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="recyclingchange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totrecycling); ?></span></div>				
+
+				
+				<div id="recycling_bankit_result"></div>
+		
+		</div>
+   
+	</div>
+</div>
+<?php cbg_tool_dropdown(); ?>
+
+
+	<script type="text/javascript">
+		jQuery(document).ready(function ($) {				
+		
+			if (window.name == "TAB2") {
+				$( "#tabs9" ).tabs({ active: 1 });
+			} else {
+				$( "#tabs9" ).tabs({ active: 0 });
+			}							
+		
+		
+		  $("#recycling_1").on("keyup", function(){
+			var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
+				val = this.value;			
+			if(!valid){
+			this.value = val.substring(0, val.length - 1);
+				$("#errmsg1").html("Currency Only").show().fadeOut(2000);
+					   return false;					
+			}
+			});		
+			
+	   });
+
+		function calcRecyclingSavings() {
+			var C1 = jQuery("#recycling_1").val();
+			jQuery("#recyclingchange_1").val(C1);
+			
+			
+		}
+   </script>
+<?php	
+	}	
+	
+	
+	
 ?>
 				<!--<div style="font-weight:bold;color:#688571;font-size:12pt;">Total amount saved (from all types of Change):&nbsp;&nbsp;<span style="font-size:24pt;">$</span><span id="savingscount" style="font-size:24pt;"></span></div>
 		-->
@@ -1315,8 +1534,8 @@ jQuery(document).ready(function ($) {
 					  separator : ',', 
 					  decimal : '.' 
 					}
-					var demo = new countUp("transsaved_1", 0.00, <?php echo $tottrans ?>, 2, 2.5, options);
-					demo.start();				
+					//var demo = new countUp("transsaved_1", 0.00, <?php echo $tottrans ?>, 2, 2.5, options);
+					//demo.start();				
 				</script>
 <?php
 }
@@ -1327,11 +1546,12 @@ function cbg_tool_dropdown() {
 	<strong>Navigate to another tool:</strong>&nbsp;
 	<select id="tooldropdown">
 		<option value="">---Select---</option>
+		<option value="appliances">Appliances</option>
 		<option value="cooling">Cooling</option>
 		<option value="entertainment">Entertainment</option>
 		<option value="grocery-shopping">Grocery Shopping</option>
 		<option value="heating">Heating</option>
-			
+		<option value="recycling">Recycling</option>		
 		<option value="transportation">Transportation</option>
 		<option value="water">Water</option>		
 	</select>
@@ -1343,6 +1563,66 @@ function cbg_tool_dropdown() {
 			});
 		});
 	</script>
+<?php
+}
+
+function cbg_state_dropdown() {
+?>
+	Select your state to calculate the amount of electricity saved: <select id="state_electric">
+		<option value='9.84' selected="true">---Select your state---</option>
+		<option value='9.18'>Alabama</option>
+		<option value='16.3'>Alaska</option>
+		<option value='9.81'>Arizona</option>
+		<option value='7.62'>Arkansas</option>
+		<option value='13.5'>California</option>
+		<option value='9.39'>Colorado</option>
+		<option value='15.5'>Connecticut</option>
+		<option value='11.1'>Delaware</option>
+		<option value='11.9'>District of Columbia</option>
+		<option value='10.4'>Florida</option>
+		<option value='9.37'>Georgia</option>
+		<option value='34'>Hawaii</option>
+		<option value='6.92'>Idaho</option>
+		<option value='8.4'>Illinois</option>
+		<option value='8.29'>Indiana</option>
+		<option value='7.71'>Iowa</option>
+		<option value='9.33'>Kansas</option>
+		<option value='7.26'>Kentucky</option>
+		<option value='6.9'>Louisiana</option>
+		<option value='11.8'>Maine</option>
+		<option value='11.3'>Maryland</option>
+		<option value='13.8'>Massachusetts</option>
+		<option value='10.98'>Michigan</option>
+		<option value='8.86'>Minnesota</option>
+		<option value='8.6'>Mississippi</option>
+		<option value='8.53'>Missouri</option>
+		<option value='8.25'>Montana</option>
+		<option value='8.37'>Nebraska</option>
+		<option value='8.95'>Nevada</option>
+		<option value='14.2'>New Hampshire</option>
+		<option value='13.7'>New Jersey</option>
+		<option value='8.83'>New Mexico</option>
+		<option value='15.2'>New York</option>
+		<option value='9.15'>North Carolina</option>
+		<option value='7.83'>North Dakota</option>
+		<option value='9.12'>Ohio</option>
+		<option value='7.54'>Oklahoma</option>
+		<option value='8.21'>Oregon</option>
+		<option value='9.91'>Pennsylvania</option>
+		<option value='12.7'>Rhode Island</option>
+		<option value='9.1'>South Carolina</option>
+		<option value='8.49'>South Dakota</option>
+		<option value='9.27'>Tennessee</option>
+		<option value='8.55'>Texas</option>
+		<option value='7.84'>Utah</option>
+		<option value='14.2'>Vermont</option>
+		<option value='9.07'>Virginia</option>
+		<option value='6.94'>Washington</option>
+		<option value='8.14'>West Virginia</option>
+		<option value='10.3'>Wisconsin</option>
+		<option value='7.19'>Wyoming</option>	
+	</select>
+<br /><span style="font-size:8pt">Source: <a href="http://www.eia.gov/electricity/state/" target="_blank">U.S. Energy Information Administration</a></span>
 <?php
 }
 

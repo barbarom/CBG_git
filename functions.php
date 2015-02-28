@@ -40,6 +40,7 @@ function my_action_callback() {
    $currentyear = intval(date('Y'));
  
    $amount = $_POST['amount'];
+   $state = $_POST['state'];
    $userid = $_POST['userid'];	
    $savingstype = $_POST['savingstype'];
    $resourceamount = $_POST['resourceamount'];
@@ -117,7 +118,7 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($heatingid, 'amount', $amount);
-			
+			update_post_meta($heatingid, 'state', $state);
 			
 	   } else if ($savingstype == 'cooling' && !empty($saving_posts)) {
 			foreach ( $saving_posts as $cooling_post ) : setup_postdata( $cooling_post ); 
@@ -130,12 +131,26 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($coolingid, 'amount', $amount);		
+			update_post_meta($coolingid, 'state', $state);
 			
+			
+	   } else if ($savingstype == 'appliance' && !empty($saving_posts)) {
+			foreach ( $saving_posts as $appliance_post ) : setup_postdata( $appliance_post ); 
+				$applianceid = $appliance_post->ID;			
+			endforeach;  
+
+			$my_post = array(
+			  'ID' => $applianceid,
+			  'post_title' => $title
+			);
+			wp_update_post( $my_post );		
+			update_post_meta($applianceid, 'amount', $amount);		
+			update_post_meta($applianceid, 'state', $state);
 			
 			
 	   } else {   
 			
-		   if(!empty($saving_posts) && $savingstype != 'heating' && $savingstype != 'cooling') {
+		   if(!empty($saving_posts) && $savingstype != 'heating' && $savingstype != 'cooling' && $savingstype != 'appliance') {
 				//update existing savings post (with cumulative amount, unlike heating/cooling)
 				foreach ( $saving_posts as $saving_post ) : setup_postdata( $saving_post ); 
 					$postid = $saving_post->ID;			
@@ -165,7 +180,7 @@ function my_action_callback() {
 				wp_set_object_terms( $post_ID, $savingstype, 'savings_types' );   
 		   }
 		   }
-		//RESOURCES (for non-heating/cooling)
+		//RESOURCES 
 		if (!empty($resourceamount)) {
 		   if ($resourcetype == 'heating-2' && !empty($resource_posts)) {
 			
@@ -194,8 +209,22 @@ function my_action_callback() {
 				update_post_meta($coolingresourceid, 'resourceamount', $resourceamount);
 			
 			
+			} else if ($resourcetype == 'appliance-2' && !empty($resource_posts)) {
+				
+				foreach ( $resource_posts as $appliance_resource ) : setup_postdata( $appliance_resource ); 
+					$applianceresourceid = $appliance_resource->ID;			
+				endforeach;		
+				
+				$my_post2 = array(
+				  'ID' => $applianceresourceid,
+				  'post_title' => $title_r
+				);
+				wp_update_post( $my_post2 );		
+				update_post_meta($applianceresourceid, 'resourceamount', $resourceamount);
+			
+			
 			} else {
-			   if(!empty($resource_posts) && $resourcetype != 'heating-2' && $resourcetype != 'cooling-2') {
+			   if(!empty($resource_posts) && $resourcetype != 'heating-2' && $resourcetype != 'cooling-2' && $resourcetype != 'appliance-2') {
 					//update existing savings post (with cumulative amount, unlike heating/cooling)
 					foreach ( $resource_posts as $resource_post ) : setup_postdata( $resource_post ); 
 						$postid = $resource_post->ID;			
@@ -230,13 +259,7 @@ function my_action_callback() {
   }
 	
 ?>
-	<script type="text/javascript">
-		alert('Your savings have been updated!');
-		window.name = "TAB2";
-		location.reload(true);
-		
-		
-	</script>
+
 <?php
 
    die(); // this is required to return a proper result
