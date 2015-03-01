@@ -38,18 +38,25 @@ function my_action_callback() {
    
    $currentmonth = intval(date('m'));
    $currentyear = intval(date('Y'));
- 
-   $amount = $_POST['amount'];
    $state = $_POST['state'];
+   $amount = $_POST['amount'];
    $userid = $_POST['userid'];	
    $savingstype = $_POST['savingstype'];
    $resourceamount = $_POST['resourceamount'];
    $resourcetype = $_POST['resourcetype'];
    $themonth = $_POST['month'];
    $theyear = $_POST['year'];
+   $newfridge = $_POST['newfridge'];
    date_default_timezone_set('America/Chicago');
    $title = $userid . "_" . $themonth . "_" . $theyear . "_" . $savingstype;
    $title_r = $userid . "_" . $themonth . "_" . $theyear . "_" . $resourcetype;
+   
+   //Add user's state and save in user meta
+   if (!empty($state)) {
+		if (!empty($userid)) {
+			update_user_meta( $userid, 'state', $state );
+		}
+   }
    
    
    $args_savings = array(
@@ -118,7 +125,7 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($heatingid, 'amount', $amount);
-			update_post_meta($heatingid, 'state', $state);
+			
 			
 	   } else if ($savingstype == 'cooling' && !empty($saving_posts)) {
 			foreach ( $saving_posts as $cooling_post ) : setup_postdata( $cooling_post ); 
@@ -131,7 +138,7 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($coolingid, 'amount', $amount);		
-			update_post_meta($coolingid, 'state', $state);
+			
 			
 			
 	   } else if ($savingstype == 'appliance' && !empty($saving_posts)) {
@@ -145,7 +152,7 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($applianceid, 'amount', $amount);		
-			update_post_meta($applianceid, 'state', $state);
+			update_post_meta($applianceid, 'newfridge', $newfridge);
 			
 			
 	   } else {   

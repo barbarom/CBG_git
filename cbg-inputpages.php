@@ -42,9 +42,34 @@ jQuery(document).ready(function ($) {
 </script>
 <?php
 	if(is_user_logged_in()) {
-	
 		global $current_user; 
-		$user_id = $current_user->ID;
+		$user_id = $current_user->ID;	
+	
+		$newfridge;
+		$fridgeargs = array(
+		'author' =>  $user_id,
+		'post_type' => 'saving',
+		'posts_per_page'=>-1,
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'savings_types',
+				'field' => 'slug',
+				'terms' => 'appliance'
+			)
+		)	
+		);
+		$fridge_posts = get_posts($fridgeargs);
+		
+		if (!empty($fridge_posts)) {
+			foreach ( $fridge_posts as $fridge_post ) : setup_postdata( $fridge_post );
+				
+				$newfridge = get_post_meta( $fridge_post->ID, 'newfridge', true );
+
+			endforeach; 
+			wp_reset_postdata();
+		}
+	
+
 		
 		if (!empty($_GET['themonth'])) {
 			$currentmonth = $_GET['themonth'];
@@ -88,6 +113,7 @@ jQuery(document).ready(function ($) {
 		$totsavings = 0;
 		$totentertainmentrecreation = 0;
 		$totappliance = 0;
+		
 		$totrecycling = 0;
 		$totheating = 0;
 		$totcooling = 0;
@@ -123,7 +149,7 @@ jQuery(document).ready(function ($) {
 					$totwater = $totwater + floatval($postamount);
 				} elseif($savingstype->slug == "appliance") {
 					$old_appliance = $postamount;	
-					$totappliance = $totappliance + floatval($postamount);
+					$totappliance = $totappliance + floatval($postamount);					
 				} elseif($savingstype->slug == "recycling") {
 					$old_recycling = $postamount;	
 					$totrecycling = $totrecycling + floatval($postamount);
@@ -1381,7 +1407,7 @@ elseif (is_page( 'appliances' )) {
 	<div id="tabs-16">
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">I replaced my current/older refrigerator with an energy star refrigerator. Use the <a href="https://www.energystar.gov/index.cfm?fuseaction=refrig.calculator" target="_blank">Energy Star Calculator</a> to figure the new annual cost.</p><br />
-		<p class="inputs"><strong>The new estimated annual cost to run my new refrigerator is:</strong> $<input id="appliance_2" /><span class="errmsg" id="errmsg2"></span></p><br />
+		<p class="inputs"><strong>The new estimated annual cost to run my new refrigerator is:</strong> $<input type="text" id="appliance_2" value="<?php echo $newfridge ?>" /><span class="errmsg" id="errmsg2"></span></p><br />
 		<p>
 		<?php
 			cbg_state_dropdown();
@@ -1390,7 +1416,7 @@ elseif (is_page( 'appliances' )) {
 		<p><input type="button" id="appliance_bankit" name="appliance_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcApplianceSavings()" /><span class="errmsg" id="errmsg3"></span></p><br />		
 		<div class="baselinediv2" id="baselineresults">
 		<h1>APPLIANCE SAVINGS</h1><br /><br />		
-			<div><strong>Appliance money saved each month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="appliancechange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totappliance); ?></span></div>				
+			<div><strong>Appliance money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="appliancechange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totappliance); ?></span></div>				
 
 				
 				<div id="appliance_bankit_result"></div>
@@ -1575,60 +1601,63 @@ function cbg_tool_dropdown() {
 }
 
 function cbg_state_dropdown() {
+	$user_ID = get_current_user_id();
+	$user_state = get_user_meta($user_ID, 'state', true);
 ?>
+	
 	Select your state to calculate the amount of electricity saved: <select id="state_electric">
-		<option value='9.84' selected="true">---Select your state---</option>
-		<option value='9.18'>Alabama</option>
-		<option value='16.3'>Alaska</option>
-		<option value='9.81'>Arizona</option>
-		<option value='7.62'>Arkansas</option>
-		<option value='13.5'>California</option>
-		<option value='9.39'>Colorado</option>
-		<option value='15.5'>Connecticut</option>
-		<option value='11.1'>Delaware</option>
-		<option value='11.9'>District of Columbia</option>
-		<option value='10.4'>Florida</option>
-		<option value='9.37'>Georgia</option>
-		<option value='34'>Hawaii</option>
-		<option value='6.92'>Idaho</option>
-		<option value='8.4'>Illinois</option>
-		<option value='8.29'>Indiana</option>
-		<option value='7.71'>Iowa</option>
-		<option value='9.33'>Kansas</option>
-		<option value='7.26'>Kentucky</option>
-		<option value='6.9'>Louisiana</option>
-		<option value='11.8'>Maine</option>
-		<option value='11.3'>Maryland</option>
-		<option value='13.8'>Massachusetts</option>
-		<option value='10.98'>Michigan</option>
-		<option value='8.86'>Minnesota</option>
-		<option value='8.6'>Mississippi</option>
-		<option value='8.53'>Missouri</option>
-		<option value='8.25'>Montana</option>
-		<option value='8.37'>Nebraska</option>
-		<option value='8.95'>Nevada</option>
-		<option value='14.2'>New Hampshire</option>
-		<option value='13.7'>New Jersey</option>
-		<option value='8.83'>New Mexico</option>
-		<option value='15.2'>New York</option>
-		<option value='9.15'>North Carolina</option>
-		<option value='7.83'>North Dakota</option>
-		<option value='9.12'>Ohio</option>
-		<option value='7.54'>Oklahoma</option>
-		<option value='8.21'>Oregon</option>
-		<option value='9.91'>Pennsylvania</option>
-		<option value='12.7'>Rhode Island</option>
-		<option value='9.1'>South Carolina</option>
-		<option value='8.49'>South Dakota</option>
-		<option value='9.27'>Tennessee</option>
-		<option value='8.55'>Texas</option>
-		<option value='7.84'>Utah</option>
-		<option value='14.2'>Vermont</option>
-		<option value='9.07'>Virginia</option>
-		<option value='6.94'>Washington</option>
-		<option value='8.14'>West Virginia</option>
-		<option value='10.3'>Wisconsin</option>
-		<option value='7.19'>Wyoming</option>	
+		<option value='9.84'>---Select your state---</option>
+		<option value='9.18' <?php if ($user_state == "Alabama") { echo " selected"; } ?>>Alabama</option>
+		<option value='16.3' <?php if ($user_state == "Alaska") { echo " selected"; } ?>>Alaska</option>
+		<option value='9.81' <?php if ($user_state == "Arizona") { echo " selected"; } ?>>Arizona</option>
+		<option value='7.62' <?php if ($user_state == "Arkansas") { echo " selected"; } ?>>Arkansas</option>
+		<option value='13.5' <?php if ($user_state == "California") { echo " selected"; } ?>>California</option>
+		<option value='9.39'<?php if ($user_state == "Colorado") { echo " selected"; } ?>>Colorado</option>
+		<option value='15.5' <?php if ($user_state == "Connecticut") { echo " selected"; } ?>>Connecticut</option>
+		<option value='11.1' <?php if ($user_state == "Delaware") { echo " selected"; } ?>>Delaware</option>
+		<option value='11.9' <?php if ($user_state == "District of Columbia") { echo " selected"; } ?>>District of Columbia</option>
+		<option value='10.4' <?php if ($user_state == "Florida") { echo " selected"; } ?>>Florida</option>
+		<option value='9.37' <?php if ($user_state == "Georgia") { echo " selected"; } ?>>Georgia</option>
+		<option value='34' <?php if ($user_state == "Hawaii") { echo " selected"; } ?>>Hawaii</option>
+		<option value='6.92' <?php if ($user_state == "Idaho") { echo " selected"; } ?>>Idaho</option>
+		<option value='8.4' <?php if ($user_state == "Illinois") { echo " selected"; } ?>>Illinois</option>
+		<option value='8.29' <?php if ($user_state == "Indiana") { echo " selected"; } ?>>Indiana</option>
+		<option value='7.71' <?php if ($user_state == "Iowa") { echo " selected"; } ?>>Iowa</option>
+		<option value='9.33' <?php if ($user_state == "Kansas") { echo " selected"; } ?>>Kansas</option>
+		<option value='7.26' <?php if ($user_state == "Kentucky") { echo " selected"; } ?>>Kentucky</option>
+		<option value='6.9' <?php if ($user_state == "Louisiana") { echo " selected"; } ?>>Louisiana</option>
+		<option value='11.8' <?php if ($user_state == "Maine") { echo " selected"; } ?>>Maine</option>
+		<option value='11.3' <?php if ($user_state == "Maryland") { echo " selected"; } ?>>Maryland</option>
+		<option value='13.8' <?php if ($user_state == "Massachusetts") { echo " selected"; } ?>>Massachusetts</option>
+		<option value='10.98' <?php if ($user_state == "Michigan") { echo " selected"; } ?>>Michigan</option>
+		<option value='8.86' <?php if ($user_state == "Minnesota") { echo " selected"; } ?>>Minnesota</option>
+		<option value='8.6' <?php if ($user_state == "Mississippi") { echo " selected"; } ?>>Mississippi</option>
+		<option value='8.53' <?php if ($user_state == "Missouri") { echo " selected"; } ?>>Missouri</option>
+		<option value='8.25' <?php if ($user_state == "Montana") { echo " selected"; } ?>>Montana</option>
+		<option value='8.37' <?php if ($user_state == "Nebraska") { echo " selected"; } ?>>Nebraska</option>
+		<option value='8.95' <?php if ($user_state == "Nevada") { echo " selected"; } ?>>Nevada</option>
+		<option value='14.2' <?php if ($user_state == "New Hampshire") { echo " selected"; } ?>>New Hampshire</option>
+		<option value='13.7' <?php if ($user_state == "New Jersey") { echo " selected"; } ?>>New Jersey</option>
+		<option value='8.83' <?php if ($user_state == "New Mexico") { echo " selected"; } ?>>New Mexico</option>
+		<option value='15.2' <?php if ($user_state == "New York") { echo " selected"; } ?>>New York</option>
+		<option value='9.15' <?php if ($user_state == "North Carolina") { echo " selected"; } ?>>North Carolina</option>
+		<option value='7.83' <?php if ($user_state == "North Dakota") { echo " selected"; } ?>>North Dakota</option>
+		<option value='9.12' <?php if ($user_state == "Ohio") { echo " selected"; } ?>>Ohio</option>
+		<option value='7.54'<?php if ($user_state == "Oklahoma") { echo " selected"; } ?>>Oklahoma</option>
+		<option value='8.21' <?php if ($user_state == "Oregon") { echo " selected"; } ?>>Oregon</option>
+		<option value='9.91' <?php if ($user_state == "Pennsylvania") { echo " selected"; } ?>>Pennsylvania</option>
+		<option value='12.7' <?php if ($user_state == "Rhode Island") { echo " selected"; } ?>>Rhode Island</option>
+		<option value='9.1' <?php if ($user_state == "South Carolina") { echo " selected"; } ?>>South Carolina</option>
+		<option value='8.49' <?php if ($user_state == "South Dakota") { echo " selected"; } ?>>South Dakota</option>
+		<option value='9.27' <?php if ($user_state == "Tennessee") { echo " selected"; } ?>>Tennessee</option>
+		<option value='8.55' <?php if ($user_state == "Texas") { echo " selected"; } ?>>Texas</option>
+		<option value='7.84'<?php if ($user_state == "Utah") { echo " selected"; } ?>>Utah</option>
+		<option value='14.2' <?php if ($user_state == "Vermont") { echo " selected"; } ?>>Vermont</option>
+		<option value='9.07' <?php if ($user_state == "Virginia") { echo " selected"; } ?>>Virginia</option>
+		<option value='6.94' <?php if ($user_state == "Washington") { echo " selected"; } ?>>Washington</option>
+		<option value='8.14' <?php if ($user_state == "West Virginia") { echo " selected"; } ?>>West Virginia</option>
+		<option value='10.3' <?php if ($user_state == "Wisconsin") { echo " selected"; } ?>>Wisconsin</option>
+		<option value='7.19'<?php if ($user_state == "Wyoming") { echo " selected"; } ?>>Wyoming</option>	
 	</select>
 <br /><span style="font-size:8pt">Source: <a href="http://www.eia.gov/electricity/state/" target="_blank">U.S. Energy Information Administration</a></span>
 <?php

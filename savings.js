@@ -211,7 +211,8 @@
 				userid: $("#userid").val(),
 				month: $("#month4").val(),
 				year: $("#year4").val(),
-				state: $("#state_electric option:selected").text()				
+				state: $("#state_electric option:selected").text(),
+				newfridge: $("#appliance_2").val()
 			  };
 			 
 			// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
@@ -380,7 +381,7 @@
 				action: 'my_base',
 				security : MyAjax.security,
 				B1: $("#appliance_1").val(), 
-				B2: $("#appliancebaseline_1").val(), 
+				B2: $("#appliancebaseline_1").val(), 				
 				baselinetype: 'appliance',
 				userid: $("#userid").val()
 			  };
