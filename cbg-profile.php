@@ -287,6 +287,28 @@ if ( is_user_logged_in() ) {
 					<?php echo getSavings('water','Y'); ?>
 				</td>
 			</tr>	
+			<tr>
+				<td style="background-color:#e0e0e0;font-size:10pt;">
+					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/02/fridge.png" alt="Appliances" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Appliances</strong>
+				</td>
+				<td class="dollarcell">
+					<?php echo getSavings('appliance','M'); ?>
+				</td>
+				<td class="dollarcell">
+					<?php echo getSavings('appliance','Y'); ?>
+				</td>
+			</tr>
+			<tr>
+				<td style="background-color:#e0e0e0;font-size:10pt;">
+					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/02/recycle.png" alt="Recycling" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Recycling</strong>
+				</td>
+				<td class="dollarcell">
+					<?php echo getSavings('recycling','M'); ?>
+				</td>
+				<td class="dollarcell">
+					<?php echo getSavings('recycling','Y'); ?>
+				</td>
+			</tr>			
 			<tr style="border-top: solid 2px; #ccc;">
 				<td style="background-color:#e0e0e0;text-align:center;">
 					<br />
@@ -411,7 +433,17 @@ if ( is_user_logged_in() ) {
 					<?php echo getResourceSavings('water-2','Y') . " gallons"; ?>
 				</td>
 			</tr>	
-
+			<tr>
+				<td style="background-color:#e0e0e0;font-size:10pt;">
+					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/05/light.png" alt="Electricity" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Electricity</strong>
+				</td>
+				<td class="dollarcell">
+					<?php echo getResourceSavings('electricity','M') . " kWh"; ?>
+				</td>
+				<td class="dollarcell">
+					<?php echo getResourceSavings('electricity','Y') . " kWh"; ?>
+				</td>
+			</tr>
 		</table>	
 	</div>
 </div>
@@ -510,6 +542,11 @@ function getSavings($stype,$timetype) {
 }
 
 function getResourceSavings($rtype,$timetype) {
+
+	if ($rtype == 'electricity') {
+		$rtype = array( 'appliance-2', 'cooling-2', 'heating-2' );
+	}
+
 	$current_user = wp_get_current_user();
 	$user_id = $current_user->ID;
 	if (!empty($_GET['monthname'])) {
@@ -577,6 +614,7 @@ function getResourceSavings($rtype,$timetype) {
 	endforeach; 	
 	wp_reset_postdata();
 	
-	return $totsavings5;
+	return number_format((float)$totsavings5, 2, '.', '');
+	
 
 }

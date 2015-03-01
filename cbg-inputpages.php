@@ -940,9 +940,17 @@ jQuery(document).ready(function ($) {
 					
 					jQuery("#heatingchange_3").val(C3);
 					
-					var stateprice = jQuery("#state_electric").val()/100;
-					var kwh = jQuery("#heatingchange_3").val()/stateprice;
-					jQuery("#heatingchange_1").val(kwh);
+					jQuery('#electric_heat_cb').click(function () {
+						if (this.checked) {
+							var stateprice = jQuery("#state_electric").val()/100;
+							var kwh = jQuery("#heatingchange_3").val()/stateprice;
+							jQuery("#heatingchange_1").val(kwh);						
+						}
+					});
+
+					
+					
+
 				}
 			
 		   }
