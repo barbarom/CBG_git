@@ -133,13 +133,25 @@ get_header(); ?>
 		border-top:0;
 		border-right:1px solid #060;
 	}
+	
+	.donate {
+		float:right;
+		margin:20px;
+	}
 </style>
 
 
 
 	<div id="primary" class="site-content">	
-    <div id="thermo1" class="thermometer">	
-	
+	<div class="donate">
+		<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+			<input type="hidden" name="cmd" value="_s-xclick">
+			<input type="hidden" name="hosted_button_id" value="2YETLMJN4NPL4">
+			<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+			<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+		</form>	
+	</div>
+    <!--<div id="thermo1" class="thermometer">	
         <div class="track">
             <div class="goal">
                 <div class="amount"></div>
@@ -148,8 +160,7 @@ get_header(); ?>
                 <div class="amount"></div>
             </div>
         </div>
-
-    </div>	
+    </div>-->	
 	
 		<div id="content" role="main">
 
