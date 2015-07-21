@@ -2,25 +2,24 @@
 /*
 Template Name: Change Based Giving - Profile Page
 */
-
-get_header(); ?>
-
-	<div id="primary" class="site-content">
-		<div id="content" role="main">
-
-			<?php 
-			cbg_profile();
-			
-			while ( have_posts() ) : the_post(); ?>
-				<?php get_template_part( 'content', 'page' ); ?>
-				
-			<?php endwhile; // end of the loop. ?>
-
-		</div><!-- #content -->
-	</div><!-- #primary -->
-
-
-<?php get_footer(); ?>
+?>
+<div id="pageheader" class="titleclass">
+	<div class="container">
+		<?php get_template_part('templates/page', 'header'); ?>
+	</div><!--container-->
+</div><!--titleclass-->
+	
+<div id="content" class="container">
+   	<div class="row">
+     	<div class="main <?php echo esc_attr(kadence_main_class()); ?>" role="main">
+				<?php 
+				cbg_profile();
+				get_template_part('templates/content', 'page'); ?>
+				<?php global $virtue; 
+					if(isset($virtue['page_comments']) && $virtue['page_comments'] == '1') {
+						comments_template('/templates/comments.php');
+					} ?>
+		</div><!-- /.main -->
 
 <?php
 function cbg_profile() {
@@ -131,16 +130,18 @@ if ( is_user_logged_in() ) {
 .dollarcell {text-align:center;vertical-align:middle;font-weight:bold;}
 .totaldollarcell {text-align:center;vertical-align:middle;font-weight:bold;font-size:14pt;}
 </style>
-
+<a href="http://www.change-based-giving.org/donate/"><img class=" size-full wp-image-928 alignright" src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/05/donatebutton.png" alt="Donate" width="112" height="40" /></a>
 <p class="pagetitles">Welcome, <?php echo $showname ?>!</p>
-<div id="profileTabs">
-  <ul>
-    <li><a href="#tab-M"><strong>Your Monetary Savings</strong></a></li>
-    <li><a href="#tab-R"><strong>Your Resource Savings</strong></a></li>    
-  </ul>
-	<div id="tab-M">	
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Monetary Savings</a></li>
+			<li id="t2"><a href="#tab2">Resource Savings</a></li>
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">	
 		<div style="width:98%;">
-			<input id="changetime" type="button" value="Switch Date" style="float:right;margin-left:5px;" />
+			<input id="changetime" type="button" value="Go" style="float:right;margin-left:5px;" />
 			<select name="year" id="year" style="float:right;">
 <?php
 				for ($i=date('Y'); $i>=2012; $i--) {
@@ -198,7 +199,7 @@ if ( is_user_logged_in() ) {
 					<strong style="font-size:14pt;">CHANGE REPORT</strong>
 					<br /><br />
 				</td>
-				<td style="width:38%;text-align:center;background-color:#e0e0e0;">
+				<td style="width:38%;text-align:center;background-color:#CFCFCF;">
 					<br />
 					<strong style="font-size:14pt;"><?php 
 					if (!empty($_GET['monthname'])) {			
@@ -209,7 +210,7 @@ if ( is_user_logged_in() ) {
 					?></strong>
 					<br /><br />
 				</td>
-				<td style="width:38%;text-align:center;background-color:#e0e0e0;">
+				<td style="width:38%;text-align:center;background-color:#CFCFCF;">
 					<br />
 					<strong style="font-size:14pt;">Year-to-Date (<?php 
 					if (!empty($_GET['theyear'])) {			
@@ -222,7 +223,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/06/transportation.png" alt="Transportation" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Transportation</strong>
 				</td>
 				<td class="dollarcell">
@@ -233,7 +234,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/06/shopping.png" alt="Grocery Shopping" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Grocery Shopping</strong>
 				</td>
 				<td class="dollarcell">
@@ -244,7 +245,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/06/entertainment.png" alt="Entertainment" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Entertainment</strong>
 				</td>
 				<td class="dollarcell">
@@ -255,7 +256,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/05/cooling.png" alt="Cooling" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Cooling</strong>
 				</td>
 				<td class="dollarcell">
@@ -266,7 +267,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/05/heating.png" alt="Heating" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Heating</strong>
 				</td>
 				<td class="dollarcell">
@@ -277,7 +278,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/05/water.png" alt="Water" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Water</strong>
 				</td>
 				<td class="dollarcell">
@@ -288,7 +289,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>	
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/02/fridge.png" alt="Appliances" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Appliances</strong>
 				</td>
 				<td class="dollarcell">
@@ -299,7 +300,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/02/recycle.png" alt="Recycling" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Recycling</strong>
 				</td>
 				<td class="dollarcell">
@@ -310,7 +311,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>			
 			<tr style="border-top: solid 2px; #ccc;">
-				<td style="background-color:#e0e0e0;text-align:center;">
+				<td style="background-color:#CFCFCF;text-align:center;">
 					<br />
 					<strong style="font-size:16pt;">TOTAL</strong>
 					<br /><br />
@@ -328,9 +329,9 @@ if ( is_user_logged_in() ) {
 			</tr>	
 		</table>
 	</div>
-	<div id="tab-R">
+	<div id="tab2" class="tab">
 		<div style="width:98%;">
-			<input id="changetime2" type="button" value="Switch Date" style="float:right;margin-left:5px;" />
+			<input id="changetime2" type="button" value="Go" style="float:right;margin-left:5px;" />
 			<select name="year2" id="year2" style="float:right;">
 <?php
 				for ($i=date('Y'); $i>=2012; $i--) {
@@ -388,7 +389,7 @@ if ( is_user_logged_in() ) {
 					<strong style="font-size:14pt;">CHANGE REPORT</strong>
 					<br /><br />
 				</td>
-				<td style="width:38%;text-align:center;background-color:#e0e0e0;">
+				<td style="width:38%;text-align:center;background-color:#CFCFCF;">
 					<br />
 					<strong style="font-size:14pt;"><?php 
 					if (!empty($_GET['monthname'])) {			
@@ -399,7 +400,7 @@ if ( is_user_logged_in() ) {
 					?></strong>
 					<br /><br />
 				</td>
-				<td style="width:38%;text-align:center;background-color:#e0e0e0;">
+				<td style="width:38%;text-align:center;background-color:#CFCFCF;">
 					<br />
 					<strong style="font-size:14pt;">Year-to-Date (<?php 
 					if (!empty($_GET['theyear'])) {			
@@ -412,7 +413,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/06/transportation.png" alt="Transportation" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Transportation</strong>
 				</td>
 				<td class="dollarcell">
@@ -423,7 +424,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/05/water.png" alt="Water" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Water</strong>
 				</td>
 				<td class="dollarcell">
@@ -434,7 +435,7 @@ if ( is_user_logged_in() ) {
 				</td>
 			</tr>	
 			<tr>
-				<td style="background-color:#e0e0e0;font-size:10pt;">
+				<td style="background-color:#CFCFCF;font-size:10pt;">
 					<img src="http://www.change-based-giving.org/cbg/wp-content/uploads/2014/05/light.png" alt="Electricity" width="40" style="vertical-align:middle;" />&nbsp;&nbsp;&nbsp;<strong>Electricity</strong>
 				</td>
 				<td class="dollarcell">
@@ -447,6 +448,7 @@ if ( is_user_logged_in() ) {
 		</table>	
 	</div>
 </div>
+</div>
 <?php	
 	} else {
 ?>	
@@ -457,15 +459,58 @@ if ( is_user_logged_in() ) {
 ?>	
 	<script type="text/javascript">
 		jQuery(document).ready(function ($) {
-				$( "#profileTabs" ).tabs();		
+			$('.tabs .tab-links a').on('click', function(e)  {
+				var currentAttrValue = $(this).attr('href');
+		 
+				// Show/Hide Tabs
+				$('.tabs ' + currentAttrValue).show().siblings().hide();
+		 
+				// Change/remove current tab to active
+				$(this).parent('li').addClass('active').siblings().removeClass('active');
+		 
+				e.preventDefault();
+			});	
+
+			var m = getParameterByName('themonth');
+			var y = getParameterByName('theyear');
+			var t = getParameterByName('thetab');
+			
+			if (m.length>2) {
+				if (t == 'tab1') {
+					$("#tab2").hide();
+					$("#tab1").show();
+					$("#t2").removeClass('active');
+					$("#t1").addClass('active');					
+				} else if (t == 'tab2') {
+					$("#tab1").hide();
+					$("#tab2").show();
+					$("#t1").removeClass('active');
+					$("#t2").addClass('active');					
+				}			
+			}
+			if (y.length>2) {
+				if (t == 'tab1') {
+					$("#tab2").hide();
+					$("#tab1").show();
+					$("#t2").removeClass('active');
+					$("#t1").addClass('active');					
+				} else if (t == 'tab2') {
+					$("#tab1").hide();
+					$("#tab2").show();
+					$("#t1").removeClass('active');
+					$("#t2").addClass('active');					
+				}
+			}		
+
+			function getParameterByName(name) {
+				name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+				var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+					results = regex.exec(location.search);
+				return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+			}			
 		});
 		
-		function getParameterByName(name) {
-			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-				results = regex.exec(location.search);
-			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-		}
+
 	</script>
 <?php	
 }

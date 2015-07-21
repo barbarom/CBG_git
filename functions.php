@@ -1,26 +1,9 @@
 <?php
-function cbg_add_tabs_js() {
-	wp_enqueue_script(
-		'custom-script',
-		get_stylesheet_directory_uri() . '/js/jquery-ui-1.10.4.custom.js',
-		array( 'jquery' )
-	);
-}
-add_action( 'wp_enqueue_scripts', 'cbg_add_tabs_js' );
 
-function cbg_add_countUp_js() {
-	wp_enqueue_script(
-		'custom-script',
-		get_stylesheet_directory_uri() . '/js/countUp.js',
-		array( 'jquery' )
-	);
-}
-
-add_action( 'wp_enqueue_scripts', 'cbg_add_countUp_js' );
 
 // Add the JS
 function cbg_savings() {
-  wp_enqueue_script( 'script-name', 'http://www.change-based-giving.org/cbg/wp-content/themes/twentytwelve-cbg/js/savings.js', array('jquery'), '1.0.0', true );
+  wp_enqueue_script( 'script-name', 'http://www.change-based-giving.org/cbg/wp-content/themes/virtue-cbg/js/savings.js', array('jquery'), '1.0.0', true );
   wp_localize_script( 'script-name', 'MyAjax', array(
     // URL to wp-admin/admin-ajax.php to process the request
     'ajaxurl' => admin_url( 'admin-ajax.php' ),
@@ -369,4 +352,144 @@ function my_lookup_callback() {
 }
 add_action( 'wp_ajax_nopriv_my_lookup', 'my_lookup_callback' );
 add_action( 'wp_ajax_my_lookup', 'my_lookup_callback' );
+
+//Code to store payment info and generate email when PayPal transaction is made.
+add_action('paypal_ipn_for_wordpress_txn_type_web_accept', 'cbg_process_payment_for_community', 10, 1);
+ 
+function cbg_process_payment_for_community( $posted )
+{
+    // Parse data from IPN $posted[] array
+    $first_name = isset($posted['first_name']) ? $posted['first_name'] : '';
+    $last_name = isset($posted['last_name']) ? $posted['last_name'] : '';
+	$payment_fee = isset($posted['payment_fee']) ? $posted['payment_fee'] : '';
+	$payment_gross = isset($posted['payment_gross']) ? $posted['payment_gross'] : '';
+    $payer_email = isset($posted['payer_email']) ? $posted['payer_email'] : '';
+    $txn_id = isset($posted['txn_id']) ? $posted['txn_id'] : '';
+	$item_name = isset($posted['item_name']) ? $posted['item_name'] : '';
+	$payment_date = isset($posted['payment_date']) ? $posted['payment_date'] : '';
+	$custom = isset($posted['custom']) ? $posted['custom'] : '';
+	
+	$gross = floatval($payment_gross);
+	$net = floatval($payment_fee);
+	$total_donation = $gross - $net;
+	
+	
+	//Insert Payment Post
+	// Create post object
+	$my_post = array(
+	  'post_title'    => $txn_id,
+	  'post_content'  => $total_donation,
+	  'post_status'   => 'publish',
+	  'post_type' => 'payment'
+	);
+
+	// Insert the post into the database
+	$newpaymentid = wp_insert_post( $my_post );	
+	
+	$taxonomyid = 0;
+	if ($custom == "mathare") {
+		$taxonomyid = 32;
+	} else if ($custom == "sanjosepalmas") {
+		$taxonomyid = 33;
+	} else if ($custom == "kolkata") {
+		$taxonomyid = 34;
+	} else if ($custom == "lima") {
+		$taxonomyid = 35;
+	}
+	//Set communities taxonomy to appropriate location.	
+	wp_set_object_terms( $newpaymentid, $taxonomyid, 'communities');
+	//Set payment status taxonomy to "Not Paid to Community" default
+	wp_set_object_terms( $newpaymentid, 37, 'payment_status');
+	
+	//Send EMAIL here
+	$confirm_msg = "Your donation of <strong>$" . $payment_gross . "</strong> has been received for the community of <strong>" . $item_name . "</strong><br/>Donation received: <strong>" . $payment_date . "</strong>";
+	
+	$headers = 'From: Change-Based Giving <change.based.giving@gmail.com>';
+	
+	add_filter( 'wp_mail_content_type', 'set_html_content_type' );
+	wp_mail( $payer_email, 'Donation to Change-Based Giving', $confirm_msg, $headers );		
+	remove_filter( 'wp_mail_content_type', 'set_html_content_type' );	
+ 
+    /**
+     * At this point you can use the data to generate email notifications,
+     * update your local database, hit 3rd party web services, or anything
+     * else you might want to automate based on this type of IPN.
+     */
+}
+
+function set_html_content_type() {
+	return 'text/html';
+}
+
+//http://wordpress.stackexchange.com/questions/87261/checkboxes-in-registration-form
+// REGISTRATION
+add_action( 'register_form', 'signup_fields_wpse_87261' );
+add_action( 'user_register', 'handle_signup_wpse_87261', 10, 2 );
+
+// PROFILE
+add_action( 'show_user_profile', 'user_field_wpse_87261' );
+add_action( 'personal_options_update', 'save_profile_fields_87261' );
+
+// USER EDIT
+add_action( 'edit_user_profile', 'user_field_wpse_87261' );
+add_action( 'edit_user_profile_update', 'save_profile_fields_87261' );
+
+function signup_fields_wpse_87261() {
+?>
+    <label>
+        <input type="checkbox" name="launch_campaign" id="launch_campaign" /> 
+		Do you want to be a part of our launch campaign?
+    </label>
+    <br /><br /><br />
+
+<?php
+}
+
+function handle_signup_wpse_87261( $user_id, $data = null ) 
+{
+    $feat_a = isset( $_POST['launch_campaign'] ) ? $_POST['launch_campaign'] : false;
+
+    if ( $feat_a ) 
+    {
+        add_user_meta( $user_id, 'launch_campaign', $feat_a );
+    }
+
+}
+
+function user_field_wpse_87261( $user ) 
+{
+    $feat_a = get_user_meta( $user->ID, 'launch_campaign', true );
+?>
+    <h3><?php _e('Launch Campaign'); ?></h3>
+    <table class="form-table">
+        <tr>
+            <td>
+                <label><?php 
+                    printf(
+                        '<input type="checkbox" name="launch_campaign" id="launch_campaign" %1$s />',
+                        checked( $feat_a, 'on', false )
+                    );
+                    ?>
+                    <span class="description"><?php _e('Part of the Launch Campaign?'); ?></span>
+                    </label>
+            </td>
+        </tr>
+    </table>
+<?php 
+}
+
+function save_profile_fields_87261( $user_id ) 
+{
+    $feat_a = isset( $_POST['launch_campaign'] ) ? $_POST['launch_campaign'] : false;
+
+    update_usermeta( $user_id, 'launch_campaign', $feat_a );
+
+}
+
+
+
+
+
+
+
 ?>

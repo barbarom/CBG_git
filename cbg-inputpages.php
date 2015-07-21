@@ -2,31 +2,70 @@
 /*
 Template Name: Change Based Giving - Input Pages
 */
-
-get_header(); ?>
-
-	<div id="primary" class="site-content">
-		<div id="content" role="main">
-
-			<?php 
-			cbg_add_inputs();
-			
-			while ( have_posts() ) : the_post(); ?>
-				<?php get_template_part( 'content', 'page' ); ?>
-				
-			<?php endwhile; // end of the loop. ?>
-
-		</div><!-- #content -->
-	</div><!-- #primary -->
-
-
-<?php get_footer(); ?>
+?>
+<div id="pageheader" class="titleclass">
+	<div class="container">
+		<?php get_template_part('templates/page', 'header'); ?>
+	</div><!--container-->
+</div><!--titleclass-->
+	
+<div id="content" class="container">
+   	<div class="row">
+     	<div class="main <?php echo esc_attr(kadence_main_class()); ?>" role="main">
+				<?php 
+				cbg_add_inputs();
+				get_template_part('templates/content', 'page'); ?>
+				<?php global $virtue; 
+					if(isset($virtue['page_comments']) && $virtue['page_comments'] == '1') {
+						comments_template('/templates/comments.php');
+					} ?>
+		</div><!-- /.main -->
 
 <?php
 function cbg_add_inputs() {
 ?>
+
 <script type="text/javascript">
 jQuery(document).ready(function ($) {
+
+    $('.tabs .tab-links a').on('click', function(e)  {
+        var currentAttrValue = $(this).attr('href');
+ 
+        // Show/Hide Tabs
+        $('.tabs ' + currentAttrValue).show().siblings().hide();
+ 
+        // Change/remove current tab to active
+        $(this).parent('li').addClass('active').siblings().removeClass('active');
+
+        e.preventDefault();
+    });
+
+	var m = getParameterByName('themonth');
+	var y = getParameterByName('theyear');
+	if (window.name == "TAB2") {
+		//alert("tab2");
+		$("#tab1").hide();
+		$("#tab2").show();
+		$("#t1").removeClass('active');
+		$("#t2").addClass('active');
+		window.name="CBG";
+	}
+	if (m.length>2) {
+		
+		$("#tab1").hide();
+		$("#tab2").show();
+		$("#t1").removeClass('active');
+		$("#t2").addClass('active');
+		
+	}
+	if (y.length>2) {
+
+		$("#tab1").hide();
+		$("#tab2").show();
+		$("#t1").removeClass('active');
+		$("#t2").addClass('active');
+	}
+	
 	$( document ).tooltip();
 	$("#water_shortcut").click(function () {
 		$("#water_3").val(.006);
@@ -38,6 +77,13 @@ jQuery(document).ready(function ($) {
             $('#electric_heat_div').fadeIn('slow');
 		}
     });
+	
+	function getParameterByName(name) {
+		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			results = regex.exec(location.search);
+		return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+	}
 });
 </script>
 <?php
@@ -242,71 +288,68 @@ jQuery(document).ready(function ($) {
 		<input type="hidden" id="userid" value="<?php echo $user_id ?>" />
 <?php
 	}
-?>
-	<div style="float:right;display:none;">
-		<select name="monthyear">
-			<option value="0514">May 2014</option>
-			<option value="0414">April 2014</option>
-			<option value="0314">March 2014</option>
-			<option value="0214">February 2014</option>
-		</select>
-		 
-	</div>
-<?php
+
 	if (is_page( 'transportation' )) {
 ?>
 	
-		<p class="pagetitles">CHANGE: TRANSPORTATION</p>
+
 		
 		
-<div id="tabs">
-  <ul>
-    <li><a href="#tabs-1"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-2"><strong>Track your Savings</strong></a></li>    
-  </ul>
-  <div id="tabs-1">		
-			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>On average, how many roundtrips do you make to work each month? (if work is not your most frequent destination, feel free to substitute something else)</strong>  <input type="text" id="trans_1" title="It may be easier to think about this as the number of weekly trips to work multiplied by four.  Also, if you go back home for lunch then return to work—make sure you consider the extra trips." style="width:50px;" value="<?php echo $B1 ?>" /><span class="errmsg" id="errmsg1"></span><br />
-			
-			<p class="inputs"><strong>How many miles are included in roundtrip—i.e. to work and back home?</strong> <input type="text" id="trans_2" style="width:50px;" title="Use the odometer on your car to measure the distance.  Or research it online using MapQuest or Google Maps" value="<?php echo $B2 ?>" /><span class="errmsg" id="errmsg2"></span><br />
-			
-			<p class="inputs"><strong>How many miles does your car travel per gallon (mpg)?  </strong> <input type="text" id="trans_3" style="width:50px;" title="When you fill up, reset your odometer.  When your tank is empty again, see how many miles you've gone.  Divide the miles by the number of gallons it took to refill your tank.  Or you could research this info online for the average MPG of your car's make and model." value="<?php echo $B3 ?>"/><span class="errmsg" id="errmsg3"></span><br />
-			
-			<p class="inputs"><strong>What is the average price of gas in your area?</strong> $  <input type="text" id="trans_4" style="width:50px;" title="This information can usually be found on the Internet (www.gasbuddy.com)" value="<?php echo $B4 ?>"/><span class="errmsg" id="errmsg4"></span> per gallon.<br />Short cut: Find average gas prices in your location by using one of the following websites: <a href="http://fuelgaugereport.aaa.com/todays-gas-prices/" target="_blank">AAA</a> or <a href="http://www.gasbuddy.com/" target="_blank">GasBuddy</a>.
-			
-		<br /><br /><br />
-		<input id="trans_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcTransportation()" /><span class="errmsg" id="errmsg5"></span>
-		<br />
-		<div class="baselinediv1" id="baselineresults">
-		<h1>LIFESTYLE BASELINE</h1><br /><br />
-			You spend about $ <input id="transbaseline_1" style="width:50px;font-weight:bold;" value="<?php echo $B5 ?>" readonly /> on gas per month.  Each trip to work costs $ <input id="transbaseline_2" value="<?php echo $B6 ?>" style="width:50px;font-weight:bold;" readonly />.  
-		</div>
-  </div>
-  <div id="tabs-2">
-	<?php if ( is_user_logged_in() ) { ?>
-		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
-		<p class="inputs">Fill in one or more options below. You can update your savings after each individual trip, or you can tally up your alternative transportation trips and add them whenever it suits you--e.g. weekly or monthly.</p><br />
-		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of driving, I saved <input type="text" id="transchange_1" style="width:50px;" /> trips to work by riding my bike.  <span class="errmsg" id="errmsg7"></span></p>
-		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;I joined a carpool and saved <input type="text" id="transchange_2" style="width:50px;" /> trips to work with my own car.  <span class="errmsg" id="errmsg8"></span></p>
-		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of driving, I took the bus or train; this saved me <input type="text" id="transchange_3" style="width:50px;" /> trips to work using my own vehicle. A roundtrip ticket costs $ <input type="text" id="transchange_4" style="width:50px;" />.  (Your total monthly savings will reflect the cost of these tickets.)
-		<span class="errmsg" id="errmsg10"></span><span class="errmsg" id="errmsg11"></span>
-		</p>
-		<br />
-		<input type="button" id="trans_bankit" name="trans_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcTransSavings()" /><span class="errmsg" id="errmsg6"></span>
-		<br />
-		<div class="baselinediv2" id="baselineresults">
-		<h1>TRANSPORTATION SAVINGS</h1><br /><br />
-			<input type="hidden" id="transsaved_0" />	
-			<p class="inputs">Gas saved this month: <input type="text" id="transsaved_2" value="<?php echo $totgas_sr; ?>" style="width:50px;font-weight:bold;" readonly /> gallons.</p>
-			<div><strong>Transportation money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="transsaved_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $tottrans); ?></span></div>
-			<div id="transbankit_result"></div>				
-		</div>
-	<?php } else {
-		echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
-		}
-	?>
-  </div>
-</div>		
+
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+					
+					<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
+					<p class="inputs"><strong>On average, how many roundtrips do you make to work each month? (if work is not your most frequent destination, feel free to substitute something else)</strong>  <input type="text" id="trans_1" title="It may be easier to think about this as the number of weekly trips to work multiplied by four.  Also, if you go back home for lunch then return to work—make sure you consider the extra trips." style="width:60px;" value="<?php echo $B1 ?>" /><span class="errmsg" id="errmsg1"></span><br />
+					
+					<p class="inputs"><strong>How many miles are included in roundtrip—i.e. to work and back home?</strong> <input type="text" id="trans_2" style="width:60px;" title="Use the odometer on your car to measure the distance.  Or research it online using MapQuest or Google Maps" value="<?php echo $B2 ?>" /><span class="errmsg" id="errmsg2"></span><br />
+					
+					<p class="inputs"><strong>How many miles does your car travel per gallon (mpg)?  </strong> <input type="text" id="trans_3" style="width:60px;" title="When you fill up, reset your odometer.  When your tank is empty again, see how many miles you've gone.  Divide the miles by the number of gallons it took to refill your tank.  Or you could research this info online for the average MPG of your car's make and model." value="<?php echo $B3 ?>"/><span class="errmsg" id="errmsg3"></span><br />
+					
+					<p class="inputs"><strong>What is the average price of gas in your area?</strong> $  <input type="text" id="trans_4" style="width:60px;" title="This information can usually be found on the Internet (www.gasbuddy.com)" value="<?php echo $B4 ?>"/><span class="errmsg" id="errmsg4"></span> per gallon.<br />Short cut: Find average gas prices in your location by using one of the following websites: <a href="http://fuelgaugereport.aaa.com/todays-gas-prices/" target="_blank">AAA</a> or <a href="http://www.gasbuddy.com/" target="_blank">GasBuddy</a>.
+					
+				<br /><br />
+				<input id="trans_base" type="button" value="Calculate Baseline" onclick="calcTransportation()" /><span class="errmsg" id="errmsg5"></span>
+				<hr />
+				<div class="baselinediv1" id="baselineresults">
+				<h5>LIFESTYLE BASELINE</h5>
+					You spend about $ <input id="transbaseline_1" style="width:50px;font-weight:bold;" value="<?php echo $B5 ?>" readonly /> on gas per month.  Each trip to work costs $ <input id="transbaseline_2" value="<?php echo $B6 ?>" style="width:50px;font-weight:bold;" readonly />.  
+				</div>
+		  </div>
+		  <div id="tab2" class="tab">
+			<?php if ( is_user_logged_in() ) { ?>
+				
+				<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
+				<p class="inputs">Fill in one or more options below. You can update your savings after each individual trip, or you can tally up your alternative transportation trips and add them whenever it suits you--e.g. weekly or monthly.</p><br />
+				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of driving, I saved <input type="text" id="transchange_1" style="width:60px;" /> trips to work by riding my bike.  <span class="errmsg" id="errmsg7"></span></p>
+				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;I joined a carpool and saved <input type="text" id="transchange_2" style="width:60px;" /> trips to work with my own car.  <span class="errmsg" id="errmsg8"></span></p>
+				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of driving, I took the bus or train; this saved me <input type="text" id="transchange_3" style="width:60px;" /> trips to work using my own vehicle. A roundtrip ticket costs $ <input type="text" id="transchange_4" style="width:60px;" />.  (Your total monthly savings will reflect the cost of these tickets.)
+				<span class="errmsg" id="errmsg10"></span><span class="errmsg" id="errmsg11"></span>
+				</p>
+				<br />
+				<input type="button" id="trans_bankit" name="trans_bankit" value="Update Savings" onclick="calcTransSavings()" /><span class="errmsg" id="errmsg6"></span>
+				<hr />
+				<div class="baselinediv2" id="baselineresults">
+				<h5>TRANSPORTATION SAVINGS</h5><br /><br />
+					<input type="hidden" id="transsaved_0" />	
+					<p class="inputs">Gas saved this month: <input type="text" id="transsaved_2" value="<?php echo $totgas_sr; ?>" style="width:50px;font-weight:bold;" readonly /> gallons.</p>
+					<div><strong>Transportation money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="transsaved_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $tottrans); ?></span></div>
+					<div id="transbankit_result"></div>				
+				</div>
+			<?php } else {
+				echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
+				}
+			?>
+		  </div>
+	</div>	
+</div>	
 <?php cbg_tool_dropdown(); ?>
 		
 
@@ -316,15 +359,7 @@ jQuery(document).ready(function ($) {
 
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
-				if (window.name == "TAB2") {
-					$( "#tabs" ).tabs({ active: 1 });
-				} else {
-					$( "#tabs" ).tabs({ active: 0 });
-				}				
-				//if the baseline is empty, Tab1 should be the default.
-				if (!jQuery("#transbaseline_2").val()) {
-					$( "#tabs" ).tabs({ active: 0 });
-				}
+
 				
 			
 			
@@ -471,39 +506,43 @@ jQuery(document).ready(function ($) {
 <?php 
 	} elseif (is_page( 'water' )) {
 ?>
-<p class="pagetitles">CHANGE: WATER</p>
-<div id="tabs2">
-  <ul>
-    <li><a href="#tabs-3"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-4"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-3">
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+		  
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>How many showers do you take per month?</strong><input type="text" id="water_1" value="<?php echo $B1 ?>" title="Remember: this question is simply trying to help you get a handle on your resource usage; your answer does not have to be exact.  Many people, for instance, shower at least once a day [e.g. before work or school in the morning], and many people exercise a consistent number of days a week [and often take showers after a workout].  These 'habits' or 'markers' should make it pretty simple to approximate how many showers you take per month." style="width:50px;" /><span class="errmsg" id="errmsg1"></span><br /></p>
-			<p class="inputs"><strong>On average, how many minutes do you spend in the shower?  </strong> <input type="text" id="water_2" title="Time your showers for the next several days and divide the total minutes by the number of days.  For instance, if you spent a total of 60 minutes in the shower over five days, your average shower time would be ten minutes." value="<?php echo $B2 ?>" style="width:50px;" /><span class="errmsg" id="errmsg2"></span><br />
-			<p class="inputs"><strong>What does one gallon of water cost from your utility?    </strong> $<input type="text" id="water_3" value="<?php echo $B3 ?>" title="Most water utilities charge a fixed amount for the first 1,000 gallons (i.e. from 1-1,000).  In Batesville, AR, for instance, the minimum fee is $8.50.  For every thousand gallons consumed after you cross the 1,000 threshold, the utility will assess a fee.  For example, in Batesville, it is $3.27 per 1,000 gallons.  So, to take a hypothetical example, let’s say you used 14,500 gallons of water in one month.  The first 1,000 gallons would cost $8.50.  Then, the remaining 13,500 gallons would cost $44.15 (13.5x$3.27).  The total water bill would be $52.65 ($8.50 minimum + $44.15). To find the amount your utility charges per gallon of water, simply divide your total bill (in this case, $52.65), by the number of total gallons used (in this case, 14,500) to get your answer--.0036 or 4/10 of a cent." style="width:50px;" /><span class="errmsg" id="errmsg3"></span><input type="button" id="water_shortcut" value="Use Shortcut" /><br />Short cut: use national average of $.006 (Source: <a href="http://www.epa.gov/watersense/our_water/how_works.html#inputs" target="_blank">EPA guidelines</a>)</p>
+			<p class="inputs"><strong>How many showers do you take per month?</strong><input type="text" id="water_1" value="<?php echo $B1 ?>" title="Remember: this question is simply trying to help you get a handle on your resource usage; your answer does not have to be exact.  Many people, for instance, shower at least once a day [e.g. before work or school in the morning], and many people exercise a consistent number of days a week [and often take showers after a workout].  These 'habits' or 'markers' should make it pretty simple to approximate how many showers you take per month." style="width:60px;" /><span class="errmsg" id="errmsg1"></span><br /></p>
+			<p class="inputs"><strong>On average, how many minutes do you spend in the shower?  </strong> <input type="text" id="water_2" title="Time your showers for the next several days and divide the total minutes by the number of days.  For instance, if you spent a total of 60 minutes in the shower over five days, your average shower time would be ten minutes." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
+			<p class="inputs"><strong>What does one gallon of water cost from your utility?    </strong> $<input type="text" id="water_3" value="<?php echo $B3 ?>" title="Most water utilities charge a fixed amount for the first 1,000 gallons (i.e. from 1-1,000).  In Batesville, AR, for instance, the minimum fee is $8.50.  For every thousand gallons consumed after you cross the 1,000 threshold, the utility will assess a fee.  For example, in Batesville, it is $3.27 per 1,000 gallons.  So, to take a hypothetical example, let’s say you used 14,500 gallons of water in one month.  The first 1,000 gallons would cost $8.50.  Then, the remaining 13,500 gallons would cost $44.15 (13.5x$3.27).  The total water bill would be $52.65 ($8.50 minimum + $44.15). To find the amount your utility charges per gallon of water, simply divide your total bill (in this case, $52.65), by the number of total gallons used (in this case, 14,500) to get your answer--.0036 or 4/10 of a cent." style="width:60px;" /><span class="errmsg" id="errmsg3"></span><input type="button" id="water_shortcut" value="Use Shortcut" /><br />Short cut: use national average of $.006 (Source: <a href="http://www.epa.gov/watersense/our_water/how_works.html#inputs" target="_blank">EPA guidelines</a>)</p>
 		<br />
 		<input id="water_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcWater()" /><span class="errmsg" id="errmsg5"></span>
-		<br />
+		<hr />
 		<div class="baselinediv1" id="baselineresults">
-		<h1>LIFESTYLE BASELINE</h1><br /><br />
+		<h5>LIFESTYLE BASELINE</h5>
 			You spend <input id="waterbaseline_1" style="width:50px;font-weight:bold;" value="<?php echo $B4 ?>" readonly /> minutes in the shower per month.  This means that you use approximately <input id="waterbaseline_2" style="width:50px;font-weight:bold;" value="<?php echo $B5 ?>" readonly />  gallons of water for showering per month.  (Cbg uses U.S. Geological Survey data: assumes average shower head/average pressure = 2.5 gallons per minute.)  Your approximate showering costs per month are $ <input id="waterbaseline_3" style="width:50px;font-weight:bold;" value="<?php echo $B6 ?>" readonly /> and your approximate cost per shower is $ <input id="waterbaseline_4" style="width:50px;font-weight:bold;" value="<?php echo $B7 ?>" readonly />.		
 			 
 		</div>		
 	</div>
-	<div id="tabs-4">
+	<div id="tab2" class="tab">
 	<?php if ( is_user_logged_in() ) { ?>	
+		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">Fill in one or more options below. This money and water saving strategy uses monthly averages.</p><br />
-		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of my normal shower time of <span id="normalshower" style="font-weight:bold;"></span> minutes, I reduced my average shower time this month by <input type="text" id="waterchange_1" style="width:50px;" /> minutes.  <span class="errmsg" id="errmsg7"></span></p>
-		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;I purchased a low flow shower head.  Instead of using approximately 2.5 gallons of water a minute, I am now using (enter new gallons per minute specs) <input type="text" id="waterchange_2" style="width:50px;" /><span class="errmsg" id="errmsg8"></span></p>
+		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of my normal shower time of <span id="normalshower" style="font-weight:bold;"></span> minutes, I reduced my average shower time this month by <input type="text" id="waterchange_1" style="width:60px;" /> minutes.  <span class="errmsg" id="errmsg7"></span></p>
+		<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;I purchased a low flow shower head.  Instead of using approximately 2.5 gallons of water a minute, I am now using (enter new gallons per minute specs) <input type="text" id="waterchange_2" style="width:60px;" /><span class="errmsg" id="errmsg8"></span></p>
 
 		</p>
 		<br />
 		<input type="button" id="water_bankit" name="water_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcWaterSavings()" /><span class="errmsg" id="errmsg6"></span>
-		<br />
+		<hr />
 		<div class="baselinediv2" id="baselineresults">
-		<h1>WATER SAVINGS</h1><br />		
+		<h5>WATER SAVINGS</h5>	
 			<p class="inputs">Gallons of water saved this month:  <input type="text" id="watersaved_2" value="<?php echo $totwater_sr; ?>" style="width:50px;font-weight:bold;" readonly /></p> 
 					
 			<div><strong>Water money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="watersaved_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totwater); ?></span></div>		
@@ -515,19 +554,12 @@ jQuery(document).ready(function ($) {
 	?>		
 	</div>
 </div>
+</div>
 <?php cbg_tool_dropdown(); ?>
 
 		<script type="text/javascript">
 		jQuery(document).ready(function ($) {
-				if (window.name == "TAB2") {
-					$( "#tabs2" ).tabs({ active: 1 });
-				} else {
-					$( "#tabs2" ).tabs({ active: 0 });
-				}				
-				//if the baseline is empty, Tab1 should be the default.
-				if (!jQuery("#waterbaseline_3").val()) {
-					$( "#tabs2" ).tabs({ active: 0 });
-				}
+
 		
 		
 		
@@ -669,28 +701,33 @@ jQuery(document).ready(function ($) {
 <?php	
 	} elseif (is_page( 'cooling' )) {
 ?>
-<p class="pagetitles">CHANGE: COOLING</p>
-<div id="tabs3">
-  <ul>
-    <li><a href="#tabs-5"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-6"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-5">	
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+		  
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>What is your average utility bill during the summer months?</strong> $<input type="text" id="cooling_4" title="Look at your statements from last year's warmest months (when you were likely using air conditioning); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:50px;" /><span class="errmsg" id="errmsg4"></span><br />
+			<p class="inputs"><strong>What is your average utility bill during the summer months?</strong> $<input type="text" id="cooling_4" title="Look at your statements from last year's warmest months (when you were likely using air conditioning); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br />
 			
 			
-			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="cooling_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:50px;" /><span class="errmsg" id="errmsg2"></span><br />
+			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="cooling_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
 			
-						
+			<br /><br />			
 			<input id="cooling_base" type="button" value="Save Cooling Usage >>" style="font-size:14pt;" />
+			<hr />
 			<span id="coolingsaved" style="display:none;color:red;margin-left:30px;">Cooling Usage Saved!</span>
 		<br />				
 	</div>
-	<div id="tabs-6">	
+	<div id="tab2" class="tab">	
 	<?php if ( is_user_logged_in() ) { ?>	
+		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
-		<p class="inputs">This month I raised my thermostat setting by an average of <input id="cooling_5" style="width:50px;" /> degrees Fahrenheit.  After the change, my thermostat setting was still over 75 degrees Fahrenheit. (please select yes or no below)
+		<p class="inputs">This month I raised my thermostat setting by an average of <input id="cooling_5" style="width:60px;" /> degrees Fahrenheit.  After the change, my thermostat setting was still over 75 degrees Fahrenheit. (please select yes or no below)
 		<br/><br/>
 		<input type="radio" name="cooling75" value="yes" />Yes<br />
 		<input type="radio" name="cooling75" value="no" />No<br /><br />
@@ -700,9 +737,10 @@ jQuery(document).ready(function ($) {
 		<br /><br />
 		<span class="errmsg" id="errmsg5"></span></p>
 		<p><input type="button" id="cooling_bankit" name="cooling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcCoolingSavings()" /><span class="errmsg" id="errmsg6"></span></p><br />
+		<hr />
 		<div class="baselinediv2" id="baselineresults">
 			
-			<h1>COOLING SAVINGS</h1><br />				
+			<h5>COOLING SAVINGS</h5>			
 				<div><strong>Cooling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="coolingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totcooling); ?></span></div>		
 				<br /><br />
 				<a href="#" id="clickcoolingass1">Our assumptions</a><div id="coolingass1" style="display:none;margin-top:15px;">After consulting several sources, including the Department of Energy, we concluded that a person can expect—on average--to lower his/her utility bill by 3% if the temperature remains above 75 degrees or 1% if below 75 degrees.</div></p>
@@ -716,6 +754,7 @@ jQuery(document).ready(function ($) {
 	?>		
 	</div>	
 </div>
+</div>
 <?php cbg_tool_dropdown(); ?>
 
 		<script type="text/javascript">
@@ -725,19 +764,7 @@ jQuery(document).ready(function ($) {
 					jQuery("#coolingchange_2").val(C2);			
 			
 			  
-				if (window.name == "TAB2") {
-					$( "#tabs3" ).tabs({ active: 1 });
-				} else {
-					$( "#tabs3" ).tabs({ active: 0 });
-				}				
-				//if the baseline is empty, Tab1 should be the default.
-				if (!jQuery("#cooling_4").val()) {
-					$( "#tabs3" ).tabs({ active: 0 });
-				}	
 
-				$( "#cooling_base" ).click(function() {
-					$( "#coolingsaved" ).show();
-				});	
 				
 			  
 
@@ -828,18 +855,21 @@ jQuery(document).ready(function ($) {
 <?php
 	} elseif (is_page( 'heating' )) {
 ?>
-<p class="pagetitles">CHANGE: HEATING</p>
-<div id="tabs4">
-  <ul>
-    <li><a href="#tabs-7"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-8"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-7">
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+			
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>What is your average utility bill for heating during the winter months?</strong> $<input type="text" id="heating_4" title="Look at your statements from last year's coolest months (when you were likely using heat); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:50px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
+			<p class="inputs"><strong>What is your average utility bill for heating during the winter months?</strong> $<input type="text" id="heating_4" title="Look at your statements from last year's coolest months (when you were likely using heat); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
 			
 			
-			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="heating_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:50px;" /><span class="errmsg" id="errmsg2"></span><br />
+			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="heating_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
 			</p>
 			
 			
@@ -847,11 +877,12 @@ jQuery(document).ready(function ($) {
 			<span id="heatingsaved" style="display:none;color:red;margin-left:30px;">Heating Usage Saved!</span>
 		<br />		
 	</div>
-	<div id="tabs-8">		
+	<div id="tab2" class="tab">		
 		<?php if ( is_user_logged_in() ) { ?>
+		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
-		<p class="inputs">This month I lowered my thermostat setting by an average of <input id="heating_5" style="width:50px;" /> degrees Fahrenheit. <span class="errmsg" id="errmsg5"></span></p>
-		<input type="checkbox" id="electric_heat_cb" /> Check box if using electric heat.
+		<p class="inputs">This month I lowered my thermostat setting by an average of <input id="heating_5" style="width:60px;" /> degrees Fahrenheit. <span class="errmsg" id="errmsg5"></span></p>
+		<input type="checkbox" id="electric_heat_cb" /> Check box if using electric heat to track kilowatt hour savings.
 		<div id="electric_heat_div" style="display:none;">
 		<?php
 			cbg_state_dropdown();
@@ -859,8 +890,9 @@ jQuery(document).ready(function ($) {
 		</div>
 		<br /><br />
 		<p><input type="button" id="heating_bankit" name="heating_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcHeatingSavings()" /><span class="errmsg" id="errmsg6"></span></p><br />
+		<hr />
 		<div class="baselinediv2" id="baselineresults">
-		<h1>HEATING SAVINGS</h1><br /><br />		
+		<h5>HEATING SAVINGS</h5>
 
 			
 			<div><strong>Heating money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="heatingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totheating); ?></span></div>				
@@ -875,6 +907,7 @@ jQuery(document).ready(function ($) {
 	?>			
 	</div>
 </div>
+</div>
 <?php cbg_tool_dropdown(); ?>
 
 		<script type="text/javascript">
@@ -884,15 +917,7 @@ jQuery(document).ready(function ($) {
 					$("#heatingchange_2").val(C2);			
 			
 			
-				if (window.name == "TAB2") {
-					$( "#tabs4" ).tabs({ active: 1 });
-				} else {
-					$( "#tabs4" ).tabs({ active: 0 });
-				}				
-				//if the baseline is empty, Tab1 should be the default.
-				if (!jQuery("#heating_4").val()) {
-					$( "#tabs4" ).tabs({ active: 0 });
-				}			
+		
 				
 				$( "#heating_base" ).click(function() {
 					$( "#heatingsaved" ).show();
@@ -981,205 +1006,44 @@ jQuery(document).ready(function ($) {
 			
 		   }
 	   </script>		
-<?php	
-	} elseif (is_page( 'lighting' )) {
-?>		
 
-<p class="pagetitles">CHANGE: LIGHTING</p>
-<div id="tabs5">
-  <ul>
-    <li><a href="#tabs-9"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-10"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-9">				
-			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>What was your total monthly electric bill?</strong> $<input type="text" id="lighting_1" title="If not already known, measure each room in your home that is heated by your electric heating system.  For each room, multiply the length by the width, and then add the individual areas together to obtain your total square feet.  Note that this will differ from real estate appraisals, which are calculated based on the exterior dimensions of your home." value="<?php echo $B1 ?>" style="width:50px;" /><span class="errmsg" id="errmsg1"></span><br />
-			</p>
-			<p class="inputs"><strong>What is your utility’s monthly service charge?  </strong> $<input type="text" id="lighting_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:50px;" /><span class="errmsg" id="errmsg2"></span><br />
-			</p>
-			<p class="inputs"><strong>How many kilo-watt hours (kwh) did you use this month?    </strong> <input type="text" id="lighting_3" title="Again, your utility bill will clearly indicate the number of kwh consumed." value="<?php echo $B3 ?>" style="width:50px;" /><span class="errmsg" id="errmsg3"></span><br />
-			</p>
-			<p class="inputs"><strong>What is the total area of your home, in square feet?</strong> <input type="text" id="lighting_4" title="If not already known, measure each room in your home.  For each room, multiply the length by the width, and then add the individual areas together to obtain your total square feet.  Note that this will differ from real estate appraisals, which are calculated based on the exterior dimensions of your home." value="<?php echo $B4 ?>" style="width:50px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
-			
-			<p class="inputs"><strong>What percent of your home is lit by compact florescent bulbs?</strong> <input type="text" id="lighting_5" title="Count the total number of bulbs in your home, incandescent as well as compact fluorescent.  Divide the number of compact fluorescent bulbs by the total number of bulbs; then multiply by 100." value="<?php echo $B5 ?>" style="width:50px;" />%<span class="errmsg" id="errmsg5"></span><br />
-			</p>
-				
-		<br /><br />				
-		<input id="lighting_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcLighting()" /><span class="errmsg" id="errmsg16"></span>
-		<br />
-		<div class="baselinediv1" id="baselineresults">
-		<h1>LIFESTYLE BASELINE</h1><br /><br />
-			Your baseline lighting power demand is  <input id="lightingbaseline_1" style="width:80px;font-weight:bold;" value="<?php echo $B6 ?>" readonly /> kwh.		
-			 
-		</div>
-	</div>
-	<div id="tabs-10">
-		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
-		<p class="inputs">This month, I replaced <input id="lighting_6" style="width:50px;" /> incandescent bulbs with compact fluorescent bulbs.  Now <input id="lighting_7" style="width:50px;" /> % of my home is lit by compact florescent bulbs.</p> 
-		<a href="#" id="click6">[Help: How do I calculate this?]</a><div id="help6" style="display:none;margin-top:7px;">Same as above—divide the number of compact florescent bulbs by the total number of bulbs; then multiply by 100.</div>
-		<p><span class="errmsg" id="errmsg6"></span><span class="errmsg" id="errmsg7"></span></p>
-		<p>By changing out your incandescent light bulbs, you are reducing your power demand.  Feel free to give yourself "credit" for this change in future months, even if you don't change more bulbs or have changed them all to fluorescent.  If at some point <strong>you</strong> decide a fluorescent lit house becomes your new "normal" you can always cease to take credit for the change.</p><br /><br />
-		<p><input type="button" id="lighting_bankit" name="lighting_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcLightingSavings()" /><span class="errmsg" id="errmsg8"></span></p><br />		
-		<div class="baselinediv2" id="baselineresults">
-		<h1>LIGHTING SAVINGS</h1><br /><br />		
-			<p class="inputs">Your new lighting power demand is  <input type="text" id="lightingchange_1" style="width:50px;font-weight:bold;" readonly /> kwh. <span class="errmsg" id="errmsg9"></span></p>
-			<p class="inputs">Resource saved this month: <input type="text" id="lightingchange_2" value="<?php echo $totlighting_sr; ?>" style="width:50px;font-weight:bold;" readonly /> kwh. <span class="errmsg" id="errmsg10"></span></p>
-			
-			<div><strong>Lighting money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="lightingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totlighting); ?></span></div>				
-			<br /><br />
-			<div style="font-size:8pt;font-style:italic">If, after calculating your savings, the amount is still zero, this is because the amount saved is miniscule and rounded to zero. Please increase the percentage of your home lit by compact fluorescent bulbs to see a monetary savings.</div><input type="hidden" id="lighting_money_saved" />
-			
-			<div id="lightingbankit_result"></div>		
-		</div>	
-	</div>	
-</div>		
-<?php cbg_tool_dropdown(); ?>
-		
-		<script type="text/javascript">
-				//added this to redirect away from lighting page while it is retired.
-				window.location = "http://www.change-based-giving.org/";
-				//		
-		
-			jQuery(document).ready(function ($) {			
-
-				
-				if (window.name == "TAB2") {
-					$( "#tabs5" ).tabs({ active: 1 });
-				} else {
-					$( "#tabs5" ).tabs({ active: 0 });
-				}				
-				//if the baseline is empty, Tab1 should be the default.
-				if (!jQuery("#lighting_5").val()) {
-					$( "#tabs5" ).tabs({ active: 0 });
-				}
-			
-			
-			
-			  $("#lighting_1").on("keyup", function(){
-				var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
-					val = this.value;
-				
-				if(!valid){
-				this.value = val.substring(0, val.length - 1);
-					$("#errmsg1").html("Currency Only").show().fadeOut(2000);
-						   return false;					
-				}
-				});	
-			  $("#lighting_2").on("keyup", function(){
-				var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
-					val = this.value;
-				
-				if(!valid){
-				this.value = val.substring(0, val.length - 1);
-					$("#errmsg2").html("Currency Only").show().fadeOut(2000);
-						   return false;					
-				}
-				});		
-			  //called when key is pressed in textbox
-			  $("#lighting_3").keypress(function (e) {
-				 //if the letter is not digit then display error and don't type anything
-				 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-					//display error message
-					$("#errmsg3").html("Digits Only").show().fadeOut(2000);
-						   return false;
-				}
-			   });
-			  //called when key is pressed in textbox
-			  $("#lighting_4").keypress(function (e) {
-				 //if the letter is not digit then display error and don't type anything
-				 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-					//display error message
-					$("#errmsg4").html("Digits Only").show().fadeOut(2000);
-						   return false;
-				}
-			   });
-			  //called when key is pressed in textbox
-			  $("#lighting_5").keypress(function (e) {
-				 //if the letter is not digit then display error and don't type anything
-				 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-					//display error message
-					$("#errmsg5").html("Digits Only").show().fadeOut(2000);
-						   return false;
-				}
-			   });
-			  $("#lighting_6").keypress(function (e) {
-				 //if the letter is not digit then display error and don't type anything
-				 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-					//display error message
-					$("#errmsg6").html("Digits Only").show().fadeOut(2000);
-						   return false;
-				}
-			   });	
-			  $("#lighting_7").keypress(function (e) {
-				 //if the letter is not digit then display error and don't type anything
-				 if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
-					//display error message
-					$("#errmsg7").html("Digits Only").show().fadeOut(2000);
-						   return false;
-				}
-			   });				   
-			});
-			
-			function calcLighting() {
-				if (jQuery("#lighting_5").val().length === 0 || jQuery("#lighting_4").val().length === 0) {
-					jQuery("#errmsg16").html("Please fill in the fields above.");
-					return false;
-				} else {
-					var C1 = (0.06241 - (0.000437 * (jQuery("#lighting_5").val()/100))) * jQuery("#lighting_4").val();
-					jQuery("#lightingbaseline_1").val(C1);
-				}
-			}
-			
-			function calcLightingSavings() {
-				var C2 = (0.06241 - 0.000437 * (jQuery("#lighting_7").val()/100)) * jQuery("#lighting_4").val();
-				jQuery("#lightingchange_1").val(C2);
-				
-				var C3 = jQuery("#lightingbaseline_1").val() - C2;
-				jQuery("#lightingchange_2").val(C3.toFixed(4));	
-
-
-				var C4 = C3 * ((jQuery("#lighting_1").val() - jQuery("#lighting_2").val()) / jQuery("#lighting_4").val());
-				//var C4 = ((jQuery("#lighting_1").val() - jQuery("#lighting_2").val())/jQuery("#lighting_4").val()) * jQuery("#lightingchange_2").val();
-				jQuery("#lightingchange_3").val(C4.toFixed(2));
-				jQuery("#lighting_money_saved").val(C4);
-				
-				//$("#errmsg19").html("The amount saved is miniscule and rounded to zero. Please increase the percentage of your home lit by compact fluorescent bulbs to see a monetary savings.").show();
-
-
-			}
-		</script>
 <?php
 	} elseif (is_page( 'grocery-shopping' )) {
 ?>
 
-<p class="pagetitles">CHANGE: GROCERY SHOPPING</p>
-<div id="tabs6">
-  <ul>
-    <li><a href="#tabs-11"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-12"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-11">		
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+			
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>On average, how much do you spend per month on groceries?</strong> $<input type="text" id="grocery_1" title="Take a look at your grocery bills (thumb through paper receipts or pull up your on-line banking statement) over the last several months.  For example, if you consider six months’ worth of spending, add all six months’ spending together and divide that total by six to get your average monthly spending." value="<?php echo $B1 ?>" style="width:50px;" /><span class="errmsg" id="errmsg1"></span><br />
+			<p class="inputs"><strong>On average, how much do you spend per month on groceries?</strong> $<input type="text" id="grocery_1" title="Take a look at your grocery bills (thumb through paper receipts or pull up your on-line banking statement) over the last several months.  For example, if you consider six months’ worth of spending, add all six months’ spending together and divide that total by six to get your average monthly spending." value="<?php echo $B1 ?>" style="width:60px;" /><span class="errmsg" id="errmsg1"></span><br />
 			</p>
 		<br /><br />				
 		<input id="grocery_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcGrocery()" /><span class="errmsg" id="errmsg16"></span>
-		<br />
+		<hr />
 		<div class="baselinediv1" id="baselineresults">
-		<h1>LIFESTYLE BASELINE</h1><br /><br />
+		<h5>LIFESTYLE BASELINE</h5>
 			As noted above, you spend an average of $ <input id="grocerybaseline_1" style="width:50px;font-weight:bold;" value="<?php echo $B2 ?>" readonly /> per month on groceries.				 
 		</div>		
 
 	</div>
-	<div id="tabs-12">
+	<div id="tab2" class="tab">
+		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
-		<p class="inputs"><strong>I used several coupons and saved $ <input id="grocery_2" title="Remember: the tool will allow you to update your savings each time you use coupons." style="width:50px;" />.</strong><br /> 
+		<p class="inputs"><strong>I used several coupons and saved $ <input id="grocery_2" title="Remember: the tool will allow you to update your savings each time you use coupons." style="width:60px;" />.</strong><br /> 
 		<span class="errmsg" id="errmsg2"></span></p>
-		<p class="inputs"><strong>I identified several items that for health-related/nutritional or simple cost reasons <i>I elected not to purchase</i>,<br />and I saved $ <input id="grocery_3" title="Remember: the tool will allow you to update your healthy living/simple living savings each time you go shopping." style="width:50px;" />.</strong><br />
+		<p class="inputs"><strong>I identified several items that for health-related/nutritional or simple cost reasons <i>I elected not to purchase</i>,<br />and I saved $ <input id="grocery_3" title="Remember: the tool will allow you to update your healthy living/simple living savings each time you go shopping." style="width:60px;" />.</strong><br />
 		<span class="errmsg" id="errmsg3"></span></p>
-		<p><input type="button" id="grocery_bankit" name="grocery_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcGrocerySavings()" /><span class="errmsg" id="errmsg4"></span></p><br />		
+		<p><input type="button" id="grocery_bankit" name="grocery_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcGrocerySavings()" /><span class="errmsg" id="errmsg4"></span></p>
+		<hr />		
 		<div class="baselinediv2" id="baselineresults">
-		<h1>GROCERY SHOPPING SAVINGS</h1><br /><br />		
+		<h5>GROCERY SHOPPING SAVINGS</h5>
 			
 			<div><strong>Grocery shopping money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="grocerychange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totgrocery); ?></span></div>				
 						
@@ -1188,20 +1052,13 @@ jQuery(document).ready(function ($) {
 	
 	</div>
 </div>		
+</div>
 <?php cbg_tool_dropdown(); ?>
 		
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {	
 
-				if (window.name == "TAB2") {
-					$( "#tabs6" ).tabs({ active: 1 });
-				} else {
-					$( "#tabs6" ).tabs({ active: 0 });
-				}				
-				//if the baseline is empty, Tab1 should be the default.
-				if (!jQuery("#grocerybaseline_1").val()) {
-					$( "#tabs6" ).tabs({ active: 0 });
-				}			
+	
 			
 				$( "#click1" ).click(function() {
 					$( "#help1" ).slideToggle( "slow" );
@@ -1255,13 +1112,15 @@ jQuery(document).ready(function ($) {
 <?php
 	} elseif (is_page( 'entertainment' )) {
 ?>
-<p class="pagetitles">CHANGE: ENTERTAINMENT</p>
-<div id="tabs7">
-  <ul>
-    <li><a href="#tabs-13"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-14"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-13">	
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
 		
 		<p class="ptext"><strong>Note:</strong> From the outset, we want to emphasize that we believe re-creation is a fundamental human need and, by asking people to consider their habits in the area of recreation and entertainment, we are by no means trying to be a “kill joy” or deter such activities.  Indeed, as with the remainder of the site, you are more than welcome to use whatever parts of the tool you find make the most sense.  Having said that, we included entertainment/recreational spending because, for many people, this is an area where there is a fair amount of consumer discretion and choice involved, and thus there is a lot of room for savings and reflection.</p>
 		<br />
@@ -1276,17 +1135,19 @@ jQuery(document).ready(function ($) {
 		<p class="ptext"><strong>Recreation:</strong> A lot of recreational choices carry little to no cost--like taking your kids to the neighborhood playground or walking your dog on a local trail system--and provide great satisfaction.  But most of us also have recreational activities and hobbies that we engage in regularly that come with a significant price tag.  Many people go boating or snow skiing multiple times a year; others take frequent hunting and fishing trips; yet others frequent the local cinema or some other cultural venue.  Again, the point is NOT that you should cease doing these things; rather, the point is to consider how much time and money you actually spend on these activities and, if you are so inclined, to consider if there may be a way to occasionally choose a lower cost yet meaningful option.  Recreation/entertainment is an area that is <i>essential</i> to our well-being, but, in a consumer society such as ours, it is also an area in which it is easy to become overly indulgent and self-centered.</p>
 		
 	</div>
-	<div id="tabs-14">
+	<div id="tab2" class="tab">
+		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">Fill in one or more options below. Remember, you can return to this site and update your savings as frequently as you like.</p><br />
 
-		<p class="inputs">In the area of eating/drinking, I saved $ <input id="entertain_1" style="width:50px;" /> <span class="errmsg" id="errmsg1"></span><br />
-		<p class="inputs">In the area of home entertainment, I saved $ <input id="entertain_2" style="width:50px;" /> <span class="errmsg" id="errmsg2"></span><br />
-		<p class="inputs">In the area of recreational activities/hobbies, I saved $ <input id="entertain_3" style="width:50px;" /> <span class="errmsg" id="errmsg3"></span><br />
-		<p class="inputs">Other: I saved $ <input id="entertain_4" style="width:50px;" /></strong> <span class="errmsg" id="errmsg4"></span><br />
-		<p><input type="button" id="entertain_bankit" name="entertain_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcEntertainSavings()" /><span class="errmsg" id="errmsg5"></span></p><br />		
+		<p class="inputs">In the area of eating/drinking, I saved $ <input id="entertain_1" style="width:60px;" /> <span class="errmsg" id="errmsg1"></span><br />
+		<p class="inputs">In the area of home entertainment, I saved $ <input id="entertain_2" style="width:60px;" /> <span class="errmsg" id="errmsg2"></span><br />
+		<p class="inputs">In the area of recreational activities/hobbies, I saved $ <input id="entertain_3" style="width:60px;" /> <span class="errmsg" id="errmsg3"></span><br />
+		<p class="inputs">Other: I saved $ <input id="entertain_4" style="width:60px;" /></strong> <span class="errmsg" id="errmsg4"></span><br />
+		<p><input type="button" id="entertain_bankit" name="entertain_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcEntertainSavings()" /><span class="errmsg" id="errmsg5"></span></p>
+		<hr />		
 		<div class="baselinediv2" id="baselineresults">
-		<h1>ENTERTAINMENT/RECREATION SAVINGS</h1><br /><br />		
+		<h5>ENTERTAINMENT/RECREATION SAVINGS</h5>	
 			<div><strong>Entertainment/Recreation money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="entertainchange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totentertainmentrecreation); ?></span></div>				
 
 				
@@ -1296,18 +1157,14 @@ jQuery(document).ready(function ($) {
    
 	</div>
 </div>
+</div>
 <?php cbg_tool_dropdown(); ?>
 
 
 	<script type="text/javascript">
 		jQuery(document).ready(function ($) {				
 		
-			if (window.name == "TAB2") {
-				$( "#tabs7" ).tabs({ active: 1 });
-			} else {
-				$( "#tabs7" ).tabs({ active: 0 });
-			}							
-		
+	
 		
 		  $("#entertain_1").on("keyup", function(){
 			var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
@@ -1384,27 +1241,31 @@ jQuery(document).ready(function ($) {
 	
 elseif (is_page( 'appliances' )) {
 ?>
-<p class="pagetitles">CHANGE: APPLIANCES</p>
-<div id="tabs8">
-  <ul>
-    <li><a href="#tabs-15"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-16"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-15">	
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+		  
 		<p class="inputs"><strong>How much does it cost to run your current refrigerator?</strong></p>
 		<p>Use the following website to calculate the annual cost of running your refrigerator. Put the yearly cost in the box below. <a href="https://www.energystar.gov/index.cfm?fuseaction=refrig.calculator" target="_blank">Energy Star Calculator</a></p>
 		<br /><br />
 		<p class="inputs"><strong>Annual Cost of Refrigerator: </strong>$<input type="text" id="appliance_1" value="<?php echo $B1 ?>" /><span class="errmsg" id="errmsg1"></span></p>
 		<br />
 		<input id="appliance_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcAppliance()" /><span class="errmsg" id="errmsg5"></span>
-		<br />
+		<hr />
 		<div class="baselinediv1" id="baselineresults">
-		<h1>BASELINE</h1><br /><br />
+		
 			You spend $<input id="appliancebaseline_1" style="width:50px;font-weight:bold;" value="<?php echo $B2 ?>" readonly /> per month.		
 			 
 		</div>			
 	</div>
-	<div id="tabs-16">
+	<div id="tab2" class="tab">
+	
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">I replaced my current/older refrigerator with an energy star refrigerator. Use the <a href="https://www.energystar.gov/index.cfm?fuseaction=refrig.calculator" target="_blank">Energy Star Calculator</a> to figure the new annual cost.</p><br />
 		<p class="inputs"><strong>The new estimated annual cost to run my new refrigerator is:</strong> $<input type="text" id="appliance_2" value="<?php echo $newfridge ?>" /><span class="errmsg" id="errmsg2"></span></p><br />
@@ -1413,9 +1274,10 @@ elseif (is_page( 'appliances' )) {
 			cbg_state_dropdown();
 		?>		
 		</p><br /><br />
-		<p><input type="button" id="appliance_bankit" name="appliance_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcApplianceSavings()" /><span class="errmsg" id="errmsg3"></span></p><br />		
+		<p><input type="button" id="appliance_bankit" name="appliance_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcApplianceSavings()" /><span class="errmsg" id="errmsg3"></span></p>
+		<hr />		
 		<div class="baselinediv2" id="baselineresults">
-		<h1>APPLIANCE SAVINGS</h1><br /><br />		
+		<h5>APPLIANCE SAVINGS</h5>		
 			<div><strong>Appliance money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="appliancechange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totappliance); ?></span></div>				
 
 				
@@ -1425,17 +1287,13 @@ elseif (is_page( 'appliances' )) {
    
 	</div>
 </div>
+</div>
 <?php cbg_tool_dropdown(); ?>
 
 
 	<script type="text/javascript">
 		jQuery(document).ready(function ($) {				
 		
-			if (window.name == "TAB2") {
-				$( "#tabs8" ).tabs({ active: 1 });
-			} else {
-				$( "#tabs8" ).tabs({ active: 0 });
-			}							
 		
 		
 		  $("#appliance_1").on("keyup", function(){
@@ -1464,7 +1322,8 @@ elseif (is_page( 'appliances' )) {
 					jQuery("#errmsg1").html("Please fill in this field.");
 					return false;
 				} else {
-					var C1 = jQuery("#appliance_1").val()/12;
+					var xy = jQuery("#appliance_1").val()/12;
+					var C1 = xy.toFixed(2);
 					jQuery("#appliancebaseline_1").val(C1);
 				}
 		}
@@ -1491,25 +1350,30 @@ elseif (is_page( 'appliances' )) {
 	
 elseif (is_page( 'recycling' )) {
 ?>
-<p class="pagetitles">CHANGE: RECYCLING</p>
-<div id="tabs9">
-  <ul>
-    <li><a href="#tabs-17"><strong>What's your Baseline?</strong></a></li>
-    <li><a href="#tabs-18"><strong>Track your Savings</strong></a></li>    
-  </ul>
-	<div id="tabs-17">	
+	<div class="tabs">
+		<ul class="tab-links">
+			<li id="t1" class="active"><a href="#tab1">Baseline</a></li>
+			<li id="t2"><a href="#tab2">Savings</a></li>
+
+		</ul>  
+	
+	  <div class="tab-content">
+		  <div id="tab1" class="tab active">
+		  
 		<p class="ptext">Many people live in cities that do not provide curbside recycling.  Or, even if they DO have such an option, they still use recycling centers.  There is no need for a baseline measure for this part of our tool.  Start recycling!  Help the planet and save some money at the same time.</p>
 
 	</div>
-	<div id="tabs-18">
+	<div id="tab2" class="tab">
+		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		
 
 		<p class="inputs">I took my recyclable materials to a local recycling center and received $ <input id="recycling_1" /> <span class="errmsg" id="errmsg1"></span><br />
 
-		<p><input type="button" id="recycling_bankit" name="recycling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcRecyclingSavings()" /><span class="errmsg" id="errmsg5"></span></p><br />		
+		<p><input type="button" id="recycling_bankit" name="recycling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcRecyclingSavings()" /><span class="errmsg" id="errmsg5"></span></p>
+		<hr />		
 		<div class="baselinediv2" id="baselineresults">
-		<h1>RECYCLING SAVINGS</h1><br /><br />		
+		<h5>RECYCLING SAVINGS</h5>		
 			<div><strong>Recycling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="recyclingchange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totrecycling); ?></span></div>				
 
 				
@@ -1519,17 +1383,13 @@ elseif (is_page( 'recycling' )) {
    
 	</div>
 </div>
+</div>
 <?php cbg_tool_dropdown(); ?>
 
 
 	<script type="text/javascript">
 		jQuery(document).ready(function ($) {				
-		
-			if (window.name == "TAB2") {
-				$( "#tabs9" ).tabs({ active: 1 });
-			} else {
-				$( "#tabs9" ).tabs({ active: 0 });
-			}							
+	
 		
 		
 		  $("#recycling_1").on("keyup", function(){
@@ -1713,7 +1573,7 @@ function cbg_change_savings_date() {
 				}
 ?>			
 			</select>	
-			<input type="button" id="changetime3" value="Switch Date" />
+			<input type="button" id="changetime3" value="Go" />
 			<hr />
 			
 			
