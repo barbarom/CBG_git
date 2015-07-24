@@ -108,7 +108,7 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($heatingid, 'amount', $amount);
-			
+			cbg_send_savings_email('Home Heating');
 			
 	   } else if ($savingstype == 'cooling' && !empty($saving_posts)) {
 			foreach ( $saving_posts as $cooling_post ) : setup_postdata( $cooling_post ); 
@@ -121,7 +121,7 @@ function my_action_callback() {
 			);
 			wp_update_post( $my_post );		
 			update_post_meta($coolingid, 'amount', $amount);		
-			
+			cbg_send_savings_email('Home Cooling');
 			
 			
 	   } else if ($savingstype == 'appliance' && !empty($saving_posts)) {
@@ -136,7 +136,7 @@ function my_action_callback() {
 			wp_update_post( $my_post );		
 			update_post_meta($applianceid, 'amount', $amount);		
 			update_post_meta($applianceid, 'newfridge', $newfridge);
-			
+			cbg_send_savings_email('Home Appliances');
 			
 	   } else {   
 			
@@ -154,7 +154,8 @@ function my_action_callback() {
 				);
 				$newamount = $amount + (float)$get_old_post_amount;
 				wp_update_post( $my_post );		
-				update_post_meta($postid, 'amount', $newamount);   
+				update_post_meta($postid, 'amount', $newamount); 
+				cbg_send_savings_email($savingstype);				
 		   } else if (empty($savings_posts)) {
 				//insert new savings post
 				$p = array(
@@ -167,7 +168,8 @@ function my_action_callback() {
 				add_post_meta($post_ID, 'amount', $amount, true);
 				add_post_meta($post_ID, 'savings_month', $themonth);
 				add_post_meta($post_ID, 'savings_year', $theyear);
-				wp_set_object_terms( $post_ID, $savingstype, 'savings_types' );   
+				wp_set_object_terms( $post_ID, $savingstype, 'savings_types' );  
+				cbg_send_savings_email($savingstype);				
 		   }
 		   }
 		//RESOURCES 
@@ -370,8 +372,8 @@ function cbg_process_payment_for_community( $posted )
 	$custom = isset($posted['custom']) ? $posted['custom'] : '';
 	
 	$gross = floatval($payment_gross);
-	$net = floatval($payment_fee);
-	$total_donation = $gross - $net;
+	$fee = floatval($payment_fee);
+	$total_donation = $gross - $fee;
 	
 	
 	//Insert Payment Post
@@ -385,6 +387,9 @@ function cbg_process_payment_for_community( $posted )
 
 	// Insert the post into the database
 	$newpaymentid = wp_insert_post( $my_post );	
+	
+	add_post_meta($newpaymentid, 'gross_donation', $gross);
+	add_post_meta($newpaymentid, 'paypal_fee', $fee);
 	
 	$taxonomyid = 0;
 	if ($custom == "mathare") {
@@ -402,13 +407,13 @@ function cbg_process_payment_for_community( $posted )
 	wp_set_object_terms( $newpaymentid, 37, 'payment_status');
 	
 	//Send EMAIL here
-	$confirm_msg = "Your donation of <strong>$" . $payment_gross . "</strong> has been received for the community of <strong>" . $item_name . "</strong><br/>Donation received: <strong>" . $payment_date . "</strong>";
+	$confirm_msg = "Change Based Giving and our partners on the front lines in urban slums thank you for your donation!<br /><br />Your donation of <strong>$" . $payment_gross . "</strong> has been received for the community of <strong>" . $item_name . "</strong><br/>Donation received: <strong>" . $payment_date . "</strong>";
 	
 	$headers = 'From: Change-Based Giving <change.based.giving@gmail.com>';
 	
-	add_filter( 'wp_mail_content_type', 'set_html_content_type' );
+	//add_filter( 'wp_mail_content_type', 'set_html_content_type' );
 	wp_mail( $payer_email, 'Donation to Change-Based Giving', $confirm_msg, $headers );		
-	remove_filter( 'wp_mail_content_type', 'set_html_content_type' );	
+	//remove_filter( 'wp_mail_content_type', 'set_html_content_type' );	
  
     /**
      * At this point you can use the data to generate email notifications,
@@ -486,10 +491,29 @@ function save_profile_fields_87261( $user_id )
 
 }
 
+function cbg_send_savings_email($savingstype) {
+	//Send EMAIL here
+	$current_user = wp_get_current_user();
+	$fname = $current_user->user_firstname;
+	$lname = $current_user->user_lastname;
+	$dispname = $current_user->display_name;
+	$showname = "";
+	if (!empty($fname) && !empty($lname)) {
+		$showname = $fname . " " . $lname;
+	} else {
+		$showname = $dispname;
+	}	
+	$user_email = $current_user->user_email;
+	
+	$confirm_msg = "Way to go " . $showname . "!!<br /><br />You made a change (or took credit for a good habit) in the area of <strong>" . ucfirst( $savingstype ) . "</strong>!!";
+	
+	//$headers = 'From: Change-Based Giving <change.based.giving@gmail.com>';
+	
+	//add_filter( 'wp_mail_content_type', 'set_html_content_type' );
+	wp_mail( $user_email, 'Congratulations on your Change!', $confirm_msg );		
+	//remove_filter( 'wp_mail_content_type', 'set_html_content_type' );
 
-
-
-
+}
 
 
 ?>
