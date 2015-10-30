@@ -230,6 +230,7 @@ jQuery(document).ready(function ($) {
 		$totlighting_sr = 0;
 		$totwater_sr = 0;	
 		$totgas_sr = 0;
+		$totappliance_sr = 0;
 		
 		foreach ( $sr_posts as $sr_post ) : setup_postdata( $sr_post ); 
 			$sramount = get_post_meta($sr_post->ID, 'resourceamount', true);
@@ -245,7 +246,9 @@ jQuery(document).ready(function ($) {
 					$totwater_sr = $totwater_sr + floatval($sramount);
 				} elseif($resourcetype->slug == "lighting-2") {
 					$totlighting_sr = $totlighting_sr + floatval($sramount);
-				} 	
+				} elseif($resourcetype->slug == "appliance-2") {
+					$totappliance_sr = $totappliance_sr + floatval($sramount);
+				}	
 			}	
 			$tot_sr = $tot_sr + floatval($sramount);				
 		endforeach; 		
@@ -333,10 +336,12 @@ jQuery(document).ready(function ($) {
 				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of driving, I saved <input type="text" id="transchange_1" style="width:60px;" /> trips to work by riding my bike.  <span class="errmsg" id="errmsg7"></span></p>
 				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;I joined a carpool and saved <input type="text" id="transchange_2" style="width:60px;" /> trips to work with my own car.  <span class="errmsg" id="errmsg8"></span></p>
 				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;Instead of driving, I took the bus or train; this saved me <input type="text" id="transchange_3" style="width:60px;" /> trips to work using my own vehicle. A roundtrip ticket costs $ <input type="text" id="transchange_4" style="width:60px;" />.  (Your total monthly savings will reflect the cost of these tickets.)
+				<p class="inputs">&bull;&nbsp;&nbsp;&nbsp;By using an alternative mode of transportation, I saved $ <input type="text" id="transchange_5" style="width:60px;" /> on parking and $ <input type="text" id="transchange_6" style="width:60px;" /> on tolls.
+
 				<span class="errmsg" id="errmsg10"></span><span class="errmsg" id="errmsg11"></span>
 				</p>
 				<br />
-				<input type="button" id="trans_bankit" name="trans_bankit" value="Update Savings" onclick="calcTransSavings()" /><span class="errmsg" id="errmsg6"></span>
+				<input type="button" id="trans_bankit" name="trans_bankit" value="Update Savings" onclick="javascript:calcTransSavings()" /><span class="errmsg" id="errmsg6"></span>
 				<hr />
 				<div class="baselinediv2" id="baselineresults">
 				<h5>TRANSPORTATION SAVINGS</h5><br />
@@ -442,7 +447,27 @@ jQuery(document).ready(function ($) {
 					$("#errmsg11").html("Currency Only").show().fadeOut(2000);
 						   return false;					
 				}
-				});			   
+				});	
+			  $("#transchange_5").on("keyup", function(){
+				var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
+					val = this.value;
+				
+				if(!valid){
+				this.value = val.substring(0, val.length - 1);
+					$("#errmsg11").html("Currency Only").show().fadeOut(2000);
+						   return false;					
+				}
+				});	
+			  $("#transchange_6").on("keyup", function(){
+				var valid = /^\d{0,4}(\.\d{0,2})?$/.test(this.value),
+					val = this.value;
+				
+				if(!valid){
+				this.value = val.substring(0, val.length - 1);
+					$("#errmsg11").html("Currency Only").show().fadeOut(2000);
+						   return false;					
+				}
+				});					
 			});		
 		   function calcTransportation() {
 				if ( jQuery("#trans_1").val().length === 0 || jQuery("#trans_2").val().length === 0 || jQuery("#trans_3").val().length === 0 || jQuery("#trans_4").val().length === 0 ) {
@@ -467,13 +492,26 @@ jQuery(document).ready(function ($) {
 						jQuery("#errmsg6").html("Please calculate your baseline before calculating your savings.").show();
 						return false;	
 				} else {
-					if ( jQuery("#transchange_1").val().length === 0 && jQuery("#transchange_2").val().length === 0 && jQuery("#transchange_3").val().length === 0 ) {
+					if ( jQuery("#transchange_1").val().length === 0 && jQuery("#transchange_2").val().length === 0 && jQuery("#transchange_3").val().length === 0 && jQuery("#transchange_5").val().length === 0 && jQuery("#transchange_6").val().length === 0 ) {
 						jQuery("#errmsg6").html("Make at least one of the savings fields is filled in!").show();
 						return false;				
 					} else {
+						
 						var othertranscost = (jQuery("#transchange_1").val() * jQuery("#transbaseline_2").val()) + (jQuery("#transchange_2").val() * jQuery("#transbaseline_2").val());
 						var pubtranscost = (jQuery("#transchange_3").val() * jQuery("#transbaseline_2").val()) - (jQuery("#transchange_4").val() * jQuery("#transchange_3").val());
-						var savings1;
+						//console.log(pubtranscost);
+						var parking = 0;
+						if( jQuery("#transchange_5").val().length > 0 ) {
+							parking = jQuery("#transchange_5").val();
+						}
+						var tolls = 0;
+						if( jQuery("#transchange_6").val().length > 0 ) {
+							tolls = jQuery("#transchange_6").val();
+						}						
+						
+						var parkandtolls = parseFloat(parking) + parseFloat(tolls);
+						//alert(parkandtolls);
+						var savings1 = 0;
 						if (pubtranscost > 0) {
 							savings1 = (othertranscost + pubtranscost).toFixed(2);
 							
@@ -484,8 +522,13 @@ jQuery(document).ready(function ($) {
 						if (savings1 < 0) {
 							savings1 = 0;
 						}
-						jQuery("#transsaved_0").val(savings1);
-						jQuery("#transsaved_NL").html("$" + savings1);
+						//alert(savings1);
+						var totsavings = parseFloat(savings1) + parkandtolls;
+						//alert(parkandtolls);
+
+						jQuery("#transsaved_0").val(totsavings.toFixed(2));
+						jQuery("#transsaved_1").val(totsavings.toFixed(2));
+						jQuery("#transsaved_NL").html("$" + totsavings.toFixed(2));
 						
 						jQuery("#errmsg6").hide();
 						
@@ -687,8 +730,8 @@ jQuery(document).ready(function ($) {
 			if (C5 < 0) {
 				C5 = 0;
 			}			
-			jQuery("#watersaved_1").val(C5);
-			jQuery("#watersaved_NL").html("$" + C5);
+			jQuery("#watersaved_1").val(C5.toFixed(2));
+			jQuery("#watersaved_NL").html("$" + C5.toFixed(2));
 			
 			var C6 = 0;
 			if (jQuery("#waterchange_2").val().length === 0 && jQuery("#waterchange_1").val().length > 0) {
@@ -727,11 +770,22 @@ jQuery(document).ready(function ($) {
 		  <div id="tab1" class="tab active">
 		  
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. You must fill in the baseline information—will only take a minute—in order to track your savings.</p>
-			<p class="inputs"><strong>What is your average utility bill during the summer months?</strong> $<input type="text" id="cooling_4" class="tooltips" title="Look at your statements from last year's warmest months (when you were likely using air conditioning); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br />
 			
-			
-			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="cooling_2" class="tooltips" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
-			
+			<input type="radio" name="utilityinput" value="custom" onclick="showCustom()" checked> Use your utility bills to calculate the baseline.<br/>
+			<input type="radio" name="utilityinput" value="average" onclick="showState()"> Use a state or national average to calculate the baseline.<br/><br/>
+			<div id="custominputs">
+				<p class="inputs"><strong>What is your average utility bill during the summer months?</strong> $<input type="text" id="cooling_4" class="tooltips" title="Look at your statements from last year's warmest months (when you were likely using air conditioning); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br />			
+				<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="cooling_2" class="tooltips" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />				
+			</div>
+			<div id="averageinputs" style="display:none">
+				<p class="inputs"><strong>Pick a state or national average:</strong><br />
+				<?php
+					cbg_elec_state_monthly_dropdown();
+				?>
+				<br /><br />
+				$<input type="text" id="state_natl_avg" style="width:60px" readonly />
+				</p>
+			</div>
 			<br /><br />			
 			<input id="cooling_base" type="button" value="Save Cooling Usage >>" style="font-size:14pt;" />
 			<hr />
@@ -758,6 +812,7 @@ jQuery(document).ready(function ($) {
 			<h5>COOLING SAVINGS</h5>	
 			<?php if ( is_user_logged_in() ) { ?>
 				<div><strong>Cooling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="coolingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totcooling); ?></span></div>		
+				<div id="coolingkwh"><strong>Electricity saved this month (kWh):</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;"></span><span id="cooling_kwh" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo round($totcooling_sr,2); ?></span></div>				
 
 				<div id="coolingbankit_result"></div>	
 				<input type="hidden" id="coolingchange_1" />
@@ -779,12 +834,49 @@ jQuery(document).ready(function ($) {
 <?php cbg_tool_dropdown(); ?>
 
 		<script type="text/javascript">
+		
+			window.showCustom = function() {
+				
+						jQuery("#custominputs").show();
+						jQuery("#averageinputs").hide();				
+			}
+			window.showState = function() {
+						jQuery("#custominputs").hide();
+						jQuery("#averageinputs").show();				
+			}		
+		
+		
 			jQuery(document).ready(function ($) {
+
+
+				
 			
-					var C2 = ((jQuery("#cooling_4").val() - jQuery("#cooling_2").val()) / jQuery("#cooling_3").val()).toFixed(2);					
-					jQuery("#coolingchange_2").val(C2);			
+				// $("#state_monthly_electric").change(function(){
+					// var selState = $("#state_monthly_electric option:selected").text();
+					// $("#state_electric option").each(function() {
+					  // if($(this).text() == selState) {
+						// $(this).attr('selected', 'selected');            
+					  // }                        
+					// });					
+				// });
 			
-			  
+				
+				if (jQuery('#state_monthly_electric').val().length != 0){
+					jQuery("#state_natl_avg").val(jQuery("#state_monthly_electric").val());
+				}							
+				
+				jQuery("#state_monthly_electric").change(function() {					
+					jQuery("#state_natl_avg").val(jQuery("#state_monthly_electric").val());
+				});
+				
+				
+			
+				var C2 = ((jQuery("#cooling_4").val() - jQuery("#cooling_2").val()) / jQuery("#cooling_3").val()).toFixed(2);					
+				jQuery("#coolingchange_2").val(C2);			
+			
+				$( "#cooling_base" ).click(function() {
+					$( "#coolingsaved" ).show();
+				});	
 
 				
 			  
@@ -843,10 +935,19 @@ jQuery(document).ready(function ($) {
 		   });
 		   
 		   function calcCoolingSavings() {
-				if (jQuery("#cooling_2").val().length === 0 || jQuery("#cooling_4").val().length === 0 || jQuery("#cooling_5").val().length === 0 ) {
+				//console.log(jQuery( 'input[name=utilityinput]:checked' ).val());
+				if ((jQuery('input[name=utilityinput]:checked').val() == 'custom') && (jQuery("#cooling_2").val().length === 0 || jQuery("#cooling_4").val().length === 0 || jQuery("#cooling_5").val().length === 0 )) {
+					
+					
+					
 					jQuery("#errmsg6").html("Please fill in all baseline values and degrees raised.");
 					return false;
 					 
+				} else if (jQuery( 'input[name=utilityinput]:checked' ).val() == 'average' && jQuery("#state_natl_avg").val().length === 0) {
+				
+					jQuery("#errmsg6").html("Please fill in all baseline values and degrees raised.");
+					return false;				
+				
 				} else if (jQuery("input:radio[name='cooling75']:checked").length == 0) {
 					jQuery("#errmsg6").html("Please fill in whether thermostat was over 75 degrees.");
 					return false;
@@ -857,14 +958,23 @@ jQuery(document).ready(function ($) {
 					// jQuery("#coolingchange_2").val(C2);
 					// var C3 = (jQuery("#coolingchange_1").val() * jQuery("#coolingchange_2").val()).toFixed(2);
 					var C3;
-					if (jQuery( 'input[name=cooling75]:checked' ).val() == 'yes') {
-						C3 = (jQuery("#cooling_4").val() - jQuery("#cooling_2").val()) * jQuery("#cooling_5").val() * 0.03;
-					} else {
-						C3 = (jQuery("#cooling_4").val() - jQuery("#cooling_2").val()) * jQuery("#cooling_5").val() * 0.01;
+					
+					if (jQuery( 'input[name=utilityinput]:checked' ).val() == 'custom') {
+						if (jQuery( 'input[name=cooling75]:checked' ).val() == 'yes') {
+							C3 = (jQuery("#cooling_4").val() - jQuery("#cooling_2").val()) * jQuery("#cooling_5").val() * 0.03;
+						} else {
+							C3 = (jQuery("#cooling_4").val() - jQuery("#cooling_2").val()) * jQuery("#cooling_5").val() * 0.01;
+						}
+					} else if (jQuery( 'input[name=utilityinput]:checked' ).val() == 'average') {
+						if (jQuery( 'input[name=cooling75]:checked' ).val() == 'yes') {
+							C3 = jQuery("#state_natl_avg").val() * jQuery("#cooling_5").val() * 0.03;
+						} else {
+							C3 = jQuery("#state_natl_avg").val() * jQuery("#cooling_5").val() * 0.01;
+						}					
 					}
 					
-					jQuery("#coolingchange_3").val(C3);
-					jQuery("#coolingchange_NL").html("$" + C3);
+					jQuery("#coolingchange_3").val(C3.toFixed(2));
+					jQuery("#coolingchange_NL").html("$" + C3.toFixed(2));
 					
 					var stateprice = jQuery("#state_electric").val()/100;
 					
@@ -889,12 +999,25 @@ jQuery(document).ready(function ($) {
 		  <div id="tab1" class="tab active">
 			
 			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. You must fill in the baseline information—will only take a minute—in order to track your savings.</p>
-			<p class="inputs"><strong>What is your average utility bill for heating during the winter months?</strong> $<input type="text" id="heating_4" class="tooltips" title="Look at your statements from last year's coolest months (when you were likely using heat); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
+			
+			<input type="radio" name="utilityinput" value="custom" onclick="showCustom()" checked> Use your utility bills to calculate the baseline.<br/>
+			<input type="radio" name="utilityinput" value="average" onclick="showState()"> Use a state or national electricity usage average (electric furnaces only).<br/><br/>			
 			
 			
-			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="heating_2" class="tooltips" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
-			</p>
-			
+			<div id="custominputs">
+				<p class="inputs"><strong>What is your average utility bill for heating during the winter months?</strong> $<input type="text" id="heating_4" class="tooltips" title="Look at your statements from last year's coolest months (when you were likely using heat); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
+				<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="heating_2" class="tooltips" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br /></p>
+			</div>
+			<div id="averageinputs" style="display:none">
+				<p class="inputs"><strong>Pick a state or national average:</strong><br />
+				<?php
+					cbg_elec_state_monthly_dropdown();
+				?>
+				<br /><br />
+				$<input type="text" id="state_natl_avg" style="width:60px" readonly />
+				</p>
+			</div>
+			<br /><br />			
 			
 			<input id="heating_base" type="button" value="Save Heating Usage >>" style="font-size:14pt;" />
 			<span id="heatingsaved" style="display:none;color:red;margin-left:30px;">Heating Usage Saved!</span>
@@ -919,6 +1042,7 @@ jQuery(document).ready(function ($) {
 		<?php if ( is_user_logged_in() ) { ?>
 			
 			<div><strong>Heating money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="heatingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totheating); ?></span></div>				
+			<div id="heatingkwh"><strong>Electricity saved this month (kWh):</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;"></span><span id="heating_kwh" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo round($totheating_sr,2); ?></span></div>				
 			
 
 			<div id="heatingbankit_result"></div>	
@@ -938,7 +1062,27 @@ jQuery(document).ready(function ($) {
 <?php cbg_tool_dropdown(); ?>
 
 		<script type="text/javascript">
+		
+			window.showCustom = function() {				
+						jQuery("#custominputs").show();
+						jQuery("#averageinputs").hide();				
+			}
+			window.showState = function() {
+						jQuery("#custominputs").hide();
+						jQuery("#averageinputs").show();				
+			}		
+		
 			jQuery(document).ready(function ($) {
+			
+			
+				if (jQuery('#state_monthly_electric').val().length != 0){
+					jQuery("#state_natl_avg").val(jQuery("#state_monthly_electric").val());
+				}							
+				
+				jQuery("#state_monthly_electric").change(function() {					
+					jQuery("#state_natl_avg").val(jQuery("#state_monthly_electric").val());
+				});			
+			
 			
 					var C2 = (($("#heating_4").val() - $("#heating_2").val()) / $("#heating_3").val()).toFixed(4);
 					$("#heatingchange_2").val(C2);			
@@ -1004,9 +1148,17 @@ jQuery(document).ready(function ($) {
 		   });
 		   
 		   function calcHeatingSavings() {
-				if (jQuery("#heating_4").val().length === 0 || jQuery("#heating_5").val().length === 0 || jQuery("#heating_2").val().length === 0) {
-					jQuery("#errmsg6").html("Please fill in all baseline values and degrees lowered.");
+		   
+				if ((jQuery('input[name=utilityinput]:checked').val() == 'custom') && (jQuery("#heating_2").val().length === 0 || jQuery("#heating_4").val().length === 0 || jQuery("#heating_5").val().length === 0 )) {
+					
+					jQuery("#errmsg6").html("Please fill in all baseline values and degrees raised.");
 					return false;
+					 
+				} else if (jQuery( 'input[name=utilityinput]:checked' ).val() == 'average' && jQuery("#state_natl_avg").val().length === 0) {
+				
+					jQuery("#errmsg6").html("Please fill in all baseline values and degrees raised.");
+					return false;	 
+
 				} else {
 					// var C1 = (0.08167 * jQuery("#heating_5").val() * jQuery("#heating_1").val()).toFixed(2);
 					// jQuery("#heatingchange_1").val(C1);
@@ -1014,18 +1166,28 @@ jQuery(document).ready(function ($) {
 					// jQuery("#heatingchange_2").val(C2);
 					//var C3 = (jQuery("#heatingchange_1").val() * jQuery("#heatingchange_2").val()).toFixed(2);
 					
-					var C3 = (jQuery("#heating_4").val() - jQuery("#heating_2").val()) * jQuery("#heating_5").val() * 0.02;
+					var C3;
 					
-					jQuery("#heatingchange_3").val(C3);
-					jQuery("#heatingchange_NL").html("$" + C3);
 					
-					jQuery('#electric_heat_cb').click(function () {
-						if (this.checked) {
-							var stateprice = jQuery("#state_electric").val()/100;
-							var kwh = jQuery("#heatingchange_3").val()/stateprice;
-							jQuery("#heatingchange_1").val(kwh);						
-						}
-					});
+					if (jQuery( 'input[name=utilityinput]:checked' ).val() == 'custom') {
+						C3 = (jQuery("#heating_4").val() - jQuery("#heating_2").val()) * jQuery("#heating_5").val() * 0.02;
+					} else if (jQuery( 'input[name=utilityinput]:checked' ).val() == 'average') {
+						C3 = jQuery("#state_natl_avg").val() * jQuery("#heating_5").val() * 0.02;					
+					}					
+					
+					
+					
+					jQuery("#heatingchange_3").val(C3.toFixed(2));
+					jQuery("#heatingchange_NL").html("$" + C3.toFixed(2));
+					
+				
+					if (jQuery('#electric_heat_cb').prop('checked')) {
+						var stateprice = jQuery("#state_electric").val()/100;
+						var kwh = jQuery("#heatingchange_3").val()/stateprice;
+						jQuery("#heatingchange_1").val(kwh);	
+						//alert(jQuery("#heatingchange_1").val());							
+					}
+				
 
 					
 					
@@ -1140,8 +1302,8 @@ jQuery(document).ready(function ($) {
 						grocery3 = parseFloat(jQuery("#grocery_3").val());
 					}					
 					var C2 = grocery2 + grocery3;
-					jQuery("#grocerychange_1").val(C2);
-					jQuery("#grocerychange_NL").html("$" + C2);
+					jQuery("#grocerychange_1").val(C2.toFixed(2));
+					jQuery("#grocerychange_NL").html("$" + C2.toFixed(2));
 				}
 				
 			}
@@ -1181,6 +1343,7 @@ jQuery(document).ready(function ($) {
 		<p class="inputs">In the area of home entertainment, I saved $ <input id="entertain_2" style="width:60px;" /> <span class="errmsg" id="errmsg2"></span><br />
 		<p class="inputs">In the area of recreational activities/hobbies, I saved $ <input id="entertain_3" style="width:60px;" /> <span class="errmsg" id="errmsg3"></span><br />
 		<p class="inputs">Other: I saved $ <input id="entertain_4" style="width:60px;" /></strong> <span class="errmsg" id="errmsg4"></span><br />
+		<p class="inputs"><strong><a href="javascript:void(0)" class="tooltips" title="Consider ‘downgrading’ your cable/direct/dish tv package.  On average, you will save about .30 per channel (e.g. 290 channels to 250 yields about $12).  Going to a matinee instead of a prime time movie is a great way to save on entertainment.  Lots of people eat fast food for lunch (average $8) several times a week, while the average homemade lunch costs about $3.  Skip a latte!">***Savings Tips***</a></strong><br /><br /></p>			
 		<p><input type="button" id="entertain_bankit" name="entertain_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcEntertainSavings()" /><span class="errmsg" id="errmsg5"></span></p>
 		<hr />		
 		<div class="baselinediv2" id="baselineresults">
@@ -1274,9 +1437,9 @@ jQuery(document).ready(function ($) {
 			}
 			
 			var C1 = (parseFloat(E1) + parseFloat(E2) + parseFloat(E3) + parseFloat(E4)).toFixed(2);
-			jQuery("#entertainchange_1").val(C1);
+			jQuery("#entertainchange_1").val(C1.toFixed(2));
 			
-			jQuery("#entertainchange_NL").html("$" + C1);
+			jQuery("#entertainchange_NL").html("$" + C1.toFixed(2));
 		}
    </script>
 <?php	
@@ -1323,6 +1486,7 @@ elseif (is_page( 'appliances' )) {
 		<h5>APPLIANCE SAVINGS</h5>	
 	<?php if ( is_user_logged_in() ) { ?>			
 			<div><strong>Appliance money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="appliancechange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totappliance); ?></span></div>				
+			<div><strong>Electricity saved this month (kWh):</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;"></span><span id="appliance_kwh" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo round($totappliance_sr,2); ?></span></div>				
 
 				
 				<div id="appliance_bankit_result"></div>
@@ -1385,8 +1549,8 @@ elseif (is_page( 'appliances' )) {
 					var C1 = jQuery("#appliance_2").val()/12;
 					var C2 = (jQuery("#appliance_1").val()/12)-C1;
 					var rndC2 = Math.round(C2 * 100) / 100;
-					jQuery("#appliancechange_1").val(rndC2);
-					jQuery("#appliancechange_NL").html("$" + rndC2);
+					jQuery("#appliancechange_1").val(rndC2.toFixed(2));
+					jQuery("#appliancechange_NL").html("$" + rndC2.toFixed(2));
 					
 					var stateprice = jQuery("#state_electric").val()/100;
 					var kwh = C2/stateprice;
@@ -1464,8 +1628,8 @@ elseif (is_page( 'recycling' )) {
 
 		function calcRecyclingSavings() {
 			var C1 = jQuery("#recycling_1").val();
-			jQuery("#recyclingchange_1").val(C1);
-			jQuery("#recyclingchange_NL").html("$" + C1);
+			jQuery("#recyclingchange_1").val(C1.toFixed(2));
+			jQuery("#recyclingchange_NL").html("$" + C1.toFixed(2));
 			
 		}
    </script>
@@ -1524,7 +1688,7 @@ function cbg_state_dropdown() {
 ?>
 	
 	Select your state to calculate the amount of electricity saved: <select id="state_electric">
-		<option value='9.84'>---Select your state---</option>
+		<option value='9.84'>---Select your state---</option>	
 		<option value='9.18' <?php if ($user_state == "Alabama") { echo " selected"; } ?>>Alabama</option>
 		<option value='16.3' <?php if ($user_state == "Alaska") { echo " selected"; } ?>>Alaska</option>
 		<option value='9.81' <?php if ($user_state == "Arizona") { echo " selected"; } ?>>Arizona</option>
@@ -1576,10 +1740,82 @@ function cbg_state_dropdown() {
 		<option value='8.14' <?php if ($user_state == "West Virginia") { echo " selected"; } ?>>West Virginia</option>
 		<option value='10.3' <?php if ($user_state == "Wisconsin") { echo " selected"; } ?>>Wisconsin</option>
 		<option value='7.19'<?php if ($user_state == "Wyoming") { echo " selected"; } ?>>Wyoming</option>	
+	
 	</select>
 <br /><span style="font-size:8pt">Source: <a href="http://www.eia.gov/electricity/state/" target="_blank">U.S. Energy Information Administration</a></span>
 <?php
 }
+
+
+function cbg_elec_state_monthly_dropdown() {
+	$user_ID = get_current_user_id();
+	$user_state = get_user_meta($user_ID, 'state', true);
+?>
+	
+	<select id="state_monthly_electric">
+		<option value='9.84'>---Select a state or national average---</option>
+		<option value='111.08' <?php if ($user_state == "National") { echo " selected"; } ?>>National</option>
+		<option value='136.36' <?php if ($user_state == "Alabama") { echo " selected"; } ?>>Alabama</option>
+		<option value='114.56' <?php if ($user_state == "Alaska") { echo " selected"; } ?>>Alaska</option>
+		<option value='122.85' <?php if ($user_state == "Arizona") { echo " selected"; } ?>>Arizona</option>
+		<option value='108.64' <?php if ($user_state == "Arkansas") { echo " selected"; } ?>>Arkansas</option>
+		<option value='90.19' <?php if ($user_state == "California") { echo " selected"; } ?>>California</option>
+		<option value='84.91'<?php if ($user_state == "Colorado") { echo " selected"; } ?>>Colorado</option>
+		<option value='132.07' <?php if ($user_state == "Connecticut") { echo " selected"; } ?>>Connecticut</option>
+		<option value='122.25' <?php if ($user_state == "Delaware") { echo " selected"; } ?>>Delaware</option>
+		<option value='90.51' <?php if ($user_state == "District of Columbia") { echo " selected"; } ?>>District of Columbia</option>
+		<option value='121.53' <?php if ($user_state == "Florida") { echo " selected"; } ?>>Florida</option>
+		<option value='124.67' <?php if ($user_state == "Georgia") { echo " selected"; } ?>>Georgia</option>
+		<option value='190.36' <?php if ($user_state == "Hawaii") { echo " selected"; } ?>>Hawaii</option>
+		<option value='98.35' <?php if ($user_state == "Idaho") { echo " selected"; } ?>>Idaho</option>
+		<option value='80.57' <?php if ($user_state == "Illinois") { echo " selected"; } ?>>Illinois</option>
+		<option value='110.44' <?php if ($user_state == "Indiana") { echo " selected"; } ?>>Indiana</option>
+		<option value='100.30' <?php if ($user_state == "Iowa") { echo " selected"; } ?>>Iowa</option>
+		<option value='107.85' <?php if ($user_state == "Kansas") { echo " selected"; } ?>>Kansas</option>
+		<option value='112.95' <?php if ($user_state == "Kentucky") { echo " selected"; } ?>>Kentucky</option>
+		<option value='119.98' <?php if ($user_state == "Louisiana") { echo " selected"; } ?>>Louisiana</option>
+		<option value='79.13' <?php if ($user_state == "Maine") { echo " selected"; } ?>>Maine</option>
+		<option value='136.63' <?php if ($user_state == "Maryland") { echo " selected"; } ?>>Maryland</option>
+		<option value='100.97' <?php if ($user_state == "Massachusetts") { echo " selected"; } ?>>Massachusetts</option>
+		<option value='96.95' <?php if ($user_state == "Michigan") { echo " selected"; } ?>>Michigan</option>
+		<option value='96.51' <?php if ($user_state == "Minnesota") { echo " selected"; } ?>>Minnesota</option>
+		<option value='131.49' <?php if ($user_state == "Mississippi") { echo " selected"; } ?>>Mississippi</option>
+		<option value='121.98' <?php if ($user_state == "Missouri") { echo " selected"; } ?>>Missouri</option>
+		<option value='88.85' <?php if ($user_state == "Montana") { echo " selected"; } ?>>Montana</option>
+		<option value='125.71' <?php if ($user_state == "Nebraska") { echo " selected"; } ?>>Nebraska</option>
+		<option value='109.94' <?php if ($user_state == "Nevada") { echo " selected"; } ?>>Nevada</option>
+		<option value='102.66' <?php if ($user_state == "New Hampshire") { echo " selected"; } ?>>New Hampshire</option>
+		<option value='108.10' <?php if ($user_state == "New Jersey") { echo " selected"; } ?>>New Jersey</option>
+		<option value='76.56' <?php if ($user_state == "New Mexico") { echo " selected"; } ?>>New Mexico</option>
+		<option value='113.17' <?php if ($user_state == "New York") { echo " selected"; } ?>>New York</option>
+		<option value='120.52' <?php if ($user_state == "North Carolina") { echo " selected"; } ?>>North Carolina</option>
+		<option value='109.85' <?php if ($user_state == "North Dakota") { echo " selected"; } ?>>North Dakota</option>
+		<option value='107.07' <?php if ($user_state == "Ohio") { echo " selected"; } ?>>Ohio</option>
+		<option value='110.55'<?php if ($user_state == "Oklahoma") { echo " selected"; } ?>>Oklahoma</option>
+		<option value='96.58' <?php if ($user_state == "Oregon") { echo " selected"; } ?>>Oregon</option>
+		<option value='124.29' <?php if ($user_state == "Pennsylvania") { echo " selected"; } ?>>Pennsylvania</option>
+		<option value='91.48' <?php if ($user_state == "Rhode Island") { echo " selected"; } ?>>Rhode Island</option>
+		<option value='134.86' <?php if ($user_state == "South Carolina") { echo " selected"; } ?>>South Carolina</option>
+		<option value='108.21' <?php if ($user_state == "South Dakota") { echo " selected"; } ?>>South Dakota</option>
+		<option value='124.25' <?php if ($user_state == "Tennessee") { echo " selected"; } ?>>Tennessee</option>
+		<option value='133.33' <?php if ($user_state == "Texas") { echo " selected"; } ?>>Texas</option>
+		<option value='82.79'<?php if ($user_state == "Utah") { echo " selected"; } ?>>Utah</option>
+		<option value='97.50' <?php if ($user_state == "Vermont") { echo " selected"; } ?>>Vermont</option>
+		<option value='125.36' <?php if ($user_state == "Virginia") { echo " selected"; } ?>>Virginia</option>
+		<option value='90.55' <?php if ($user_state == "Washington") { echo " selected"; } ?>>Washington</option>
+		<option value='106.44' <?php if ($user_state == "West Virginia") { echo " selected"; } ?>>West Virginia</option>
+		<option value='95.21' <?php if ($user_state == "Wisconsin") { echo " selected"; } ?>>Wisconsin</option>
+		<option value='90.85'<?php if ($user_state == "Wyoming") { echo " selected"; } ?>>Wyoming</option>		
+	
+	</select>
+<br /><span style="font-size:8pt">Source: <a href="http://www.eia.gov/electricity/state/" target="_blank">U.S. Energy Information Administration</a></span>
+
+
+<?php
+}
+
+
+
 
 function cbg_change_savings_date() {
 ?>

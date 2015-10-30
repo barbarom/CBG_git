@@ -1,4 +1,3 @@
-
 <?php
 /*
 Template Name: Change Based Giving - Annual Donation Email
@@ -38,7 +37,7 @@ function cbg_annual_donation_email() {
 			$aid = $author_info->ID;	
 			$aemail = $author_info->user_email;	
 			$currentyear = $_POST['taxyear'];
-			echo "<li><strong>" . $aemail . "</strong></li>";
+			
 			$args2 = array(				
 				'post_type' => 'payment',
 				'posts_per_page' => -1, 
@@ -69,7 +68,18 @@ function cbg_annual_donation_email() {
 			//if ($aid == 1) {
 				$donation_str = $donation_str . "</tbody></table>";
 				$confirm_msg = "Here are your total donations to Change Based Giving for the tax year: <strong>" . $currentyear . "</strong><br /><br /><br />" . $donation_str . "<br /><br />" . $currentyear . " Total = <strong>" . money_format('$%i', $ttl_donation) . "</strong><br /><br /><br />";
-				wp_mail( $aemail, 'Change Based Giving donations for tax year ' . $currentyear, $confirm_msg );			
+				
+				
+				//Check if the user is unsubscribed. If yes, don't send email
+				$unsubscribe_status = get_user_meta($aid, 'unsubscribe');	
+				if (empty($unsubscribe_status)) {					
+					echo "<li><strong>" . $aemail . "</strong></li>";
+					wp_mail( $aemail, 'Change Based Giving donations for tax year ' . $currentyear, $confirm_msg );		
+				}
+				
+				
+				
+				
 			//}
 			
 		}
@@ -91,9 +101,13 @@ function cbg_annual_donation_email() {
 	Tax Year: <strong><?php echo $taxyear; ?></strong> 
 	<input type="hidden" id="taxyear" name="taxyear" value="<?php echo $taxyear; ?>">
 	<br/><br/>
-	<input type="submit" name="send_annual_email" id="send_annual_email" value="Send Annual Email to All Users" />  
+	<input type="submit" name="send_annual_email" id="send_annual_email" value="Send Annual Email to All Users" onclick="return show_confirm();" />  
 </form>
-	
+<script>
+    function show_confirm(){
+        return confirm("Are you sure you want to send this email to all of our users?");
+    }
+</script>	
 <?php	
 	}
 }

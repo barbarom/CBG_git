@@ -44,18 +44,18 @@ function cbg_give_w_map() {
 			
 		map.setOptions({ minZoom: 2 });
 			
-		var MCM_latlng = new google.maps.LatLng(19.432608, -99.133208);
-		var mexicocity = new google.maps.Marker({
-			position: MCM_latlng,
-			map: map,
-			title:"Mexico City, Mexico"
-		});			
-		var KI_latlng = new google.maps.LatLng(22.572646, 88.363895);
-			var kolkata = new google.maps.Marker({
-			position: KI_latlng,
-			map: map,
-			title:"Kolkata, India"
-		});	
+		// var MCM_latlng = new google.maps.LatLng(19.432608, -99.133208);
+		// var mexicocity = new google.maps.Marker({
+			// position: MCM_latlng,
+			// map: map,
+			// title:"Mexico City, Mexico"
+		// });			
+		// var KI_latlng = new google.maps.LatLng(22.572646, 88.363895);
+			// var kolkata = new google.maps.Marker({
+			// position: KI_latlng,
+			// map: map,
+			// title:"Kolkata, India"
+		// });	
 		var NK_latlng = new google.maps.LatLng(-1.2610267,36.8644604);
 			var nairobi = new google.maps.Marker({
 			position: NK_latlng,
@@ -64,33 +64,33 @@ function cbg_give_w_map() {
 		});	
 
 		
-		var MCMcontentString = '<div id="content1" style="max-height:300px;overflow-y:auto;">'+
-			'<h5>Mexico City, Mexico</h5>'+
-			'Projects from Mexico City Coming Soon'+
-			'</div>';
-		var MCMinfowindow = new google.maps.InfoWindow({
-		  content: MCMcontentString,
-		  maxWidth: 320
-		});				
-		google.maps.event.addListener(mexicocity, 'click', function() {
-			map.setZoom(4);
-			map.setCenter(mexicocity.getPosition());
-			MCMinfowindow.open(map,mexicocity);
-		});
+		// var MCMcontentString = '<div id="content1" style="max-height:300px;overflow-y:auto;">'+
+			// '<h5>Mexico City, Mexico</h5>'+
+			// 'Projects from Mexico City Coming Soon'+
+			// '</div>';
+		// var MCMinfowindow = new google.maps.InfoWindow({
+		  // content: MCMcontentString,
+		  // maxWidth: 320
+		// });				
+		// google.maps.event.addListener(mexicocity, 'click', function() {
+			// map.setZoom(4);
+			// map.setCenter(mexicocity.getPosition());
+			// MCMinfowindow.open(map,mexicocity);
+		// });
 
-		var KIcontentString = '<div id="content2" style="max-height:300px;overflow-y:auto;">'+
-			'<h5>Kolkata, India</h5>'+
-			'Projects from Kolkata Coming Soon'+
-			'</div>';
-		var KIinfowindow = new google.maps.InfoWindow({
-		  content: KIcontentString,
-		  maxWidth: 320
-		});				
-		google.maps.event.addListener(kolkata, 'click', function() {
-			map.setZoom(4);
-			map.setCenter(kolkata.getPosition());
-			KIinfowindow.open(map,kolkata);
-		});
+		// var KIcontentString = '<div id="content2" style="max-height:300px;overflow-y:auto;">'+
+			// '<h5>Kolkata, India</h5>'+
+			// 'Projects from Kolkata Coming Soon'+
+			// '</div>';
+		// var KIinfowindow = new google.maps.InfoWindow({
+		  // content: KIcontentString,
+		  // maxWidth: 320
+		// });				
+		// google.maps.event.addListener(kolkata, 'click', function() {
+			// map.setZoom(4);
+			// map.setCenter(kolkata.getPosition());
+			// KIinfowindow.open(map,kolkata);
+		// });
 		
 		var NKcontentString = '<div id="content3" style="max-height:300px;overflow-y:auto;">'+
 			'<h5>Mathare Neighborhood, Nairobi, Kenya</h5>'+

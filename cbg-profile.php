@@ -26,6 +26,13 @@ function cbg_profile() {
 if ( is_user_logged_in() ) {
 
 	$current_user = wp_get_current_user();
+	
+
+
+
+
+	
+	
 	$fname = $current_user->user_firstname;
 	$lname = $current_user->user_lastname;
 	$dispname = $current_user->display_name;
@@ -37,6 +44,10 @@ if ( is_user_logged_in() ) {
 	}
 		
 	$user_id = $current_user->ID;
+	
+
+	
+	
 	
 	if (!empty($_GET['monthname'])) {
 		$currentmonth = $_GET['monthname'];

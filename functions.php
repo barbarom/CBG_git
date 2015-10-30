@@ -29,7 +29,9 @@ function my_action_callback() {
    $resourcetype = $_POST['resourcetype'];
    $themonth = $_POST['month'];
    $theyear = $_POST['year'];
-   $newfridge = $_POST['newfridge'];
+   if (!empty($_POST['newfridge'])) {
+	$newfridge = $_POST['newfridge'];
+   }   
    date_default_timezone_set('America/Chicago');
    $title = $userid . "_" . $themonth . "_" . $theyear . "_" . $savingstype;
    $title_r = $userid . "_" . $themonth . "_" . $theyear . "_" . $resourcetype;
@@ -172,8 +174,10 @@ function my_action_callback() {
 				cbg_send_savings_email($savingstype, $userid);				
 		   }
 		   }
+		   
 		//RESOURCES 
 		if (!empty($resourceamount)) {
+
 		   if ($resourcetype == 'heating-2' && !empty($resource_posts)) {
 			
 				foreach ( $resource_posts as $heating_resource ) : setup_postdata( $heating_resource ); 
@@ -457,11 +461,11 @@ add_action( 'edit_user_profile_update', 'save_profile_fields_87261' );
 function signup_fields_wpse_87261() {
 ?>
 <p style="margin-bottom:12px;font-style:italic;">***Please check your junk folder in case an email from CBG is interpreted as spam.***</p>
-    <label>
+    <!--<label>
         <input type="checkbox" name="launch_campaign" id="launch_campaign" /> 
 		Do you want to be a part of our launch campaign?
     </label>
-    <br /><br /><br />
+    <br /><br /><br />-->
 
 <?php
 }
@@ -537,5 +541,11 @@ function cbg_send_savings_email($savingstype, $userid) {
 
 }
 
-
+function remove_kt_menu() {
+global $kt_custom_menu;
+remove_filter( 'wp_setup_nav_menu_item', array( $kt_custom_menu, 'kt_add_nav_fields' ) );
+remove_action( 'wp_update_nav_menu_item', array( $kt_custom_menu, 'kt_update_nav_fields'), 10, 3 );
+remove_filter( 'wp_edit_nav_menu_walker', array( $kt_custom_menu, 'kt_edit_admin_walker'), 10, 2 );
+}
+add_action('init','remove_kt_menu', 100);
 ?>
