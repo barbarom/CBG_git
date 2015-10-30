@@ -34,12 +34,17 @@ function cbg_donate() {
 	
 </select>
 <br/><br/>
+<?php
+	$current_user = wp_get_current_user();
+	$userid = $current_user->ID;
+	$useremail = $current_user->user_email;
 
+?>
 <div id="mathare_btn" style="display:none;">
 	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 	<input type="hidden" name="cmd" value="_s-xclick">
 	<input type="hidden" name="hosted_button_id" value="RF9USTMM8NPQL">
-	<input type="hidden" name="custom" value="mathare">
+	<input type="hidden" name="custom" value="mathare|<?php echo $userid . '|' . $useremail; ?>">
 	<input type="image" src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/05/donatenowbutton.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 	<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 	</form>
@@ -48,7 +53,7 @@ function cbg_donate() {
 	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 	<input type="hidden" name="cmd" value="_s-xclick">
 	<input type="hidden" name="hosted_button_id" value="JG3HCDDY3QN3A">
-	<input type="hidden" name="custom" value="kolkata">
+	<input type="hidden" name="custom" value="kolkata|<?php echo $userid . '|' . $useremail; ?>">
 	<input type="image" src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/05/donatenowbutton.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 	<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 	</form>
@@ -57,7 +62,7 @@ function cbg_donate() {
 	<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 	<input type="hidden" name="cmd" value="_s-xclick">
 	<input type="hidden" name="hosted_button_id" value="E8CHQ6WKMPLQ6">
-	<input type="hidden" name="custom" value="sanjosepalmas">
+	<input type="hidden" name="custom" value="sanjosepalmas|<?php echo $userid . '|' . $useremail; ?>">
 	<input type="image" src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/05/donatenowbutton.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 	<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 	</form>
@@ -66,7 +71,7 @@ function cbg_donate() {
 	<form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
 	<input type="hidden" name="cmd" value="_s-xclick">
 	<input type="hidden" name="hosted_button_id" value="T4P6ZD5DKJYVL">
-	<input type="hidden" name="custom" value="lima">
+	<input type="hidden" name="custom" value="lima|<?php echo $userid . '|' . $useremail; ?>">
 	<input type="image" src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/05/donatenowbutton.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 	<img alt="" border="0" src="https://www.sandbox.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1">
 	</form>

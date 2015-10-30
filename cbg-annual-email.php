@@ -1,3 +1,4 @@
+
 <?php
 /*
 Template Name: Change Based Giving - Annual Donation Email
@@ -25,70 +26,54 @@ Template Name: Change Based Giving - Annual Donation Email
 function cbg_annual_donation_email() {
   if (!empty($_POST['send_annual_email'])) {
 
-	$args = array('orderby' => 'display_name');
-	$wp_user_query = new WP_User_Query($args);
-	$authors = $wp_user_query->get_results();
+	$args = array('orderby' => 'ID');
+	$wp_user_query = get_users( $args );
 
-	if (!empty($authors)) {
+
+	if (!empty($wp_user_query)) {
 		echo "Annual Report Email sent to:<br /><br />";
-		//echo '<ul>';
-		foreach ($authors as $author) {
-			$author_info = get_userdata($author->ID);
-			$aid = $author_info->ID;
-			$currentyear = intval($_POST['taxyear']);
-			$args_payments = array(
-				'author' => 1,
+		
+		foreach ($wp_user_query as $author5) {
+			$author_info = get_userdata($author5->ID);			
+			$aid = $author_info->ID;	
+			$aemail = $author_info->user_email;	
+			$currentyear = $_POST['taxyear'];
+			echo "<li><strong>" . $aemail . "</strong></li>";
+			$args2 = array(				
 				'post_type' => 'payment',
-				'posts_per_page' => -1,					
-				'date_query' => array(
+				'posts_per_page' => -1, 
+				'year' => $currentyear,
+				'meta_query' => array(
 					array(
-						'year'  => $currentyear
+						'key'     => 'user_id',
+						'value'   => $aid,						
 					),
-				),
-			);
-			$query = new WP_Query($args_payments);
-			//var_dump($args_payments);
-		   if($query->have_posts()) : 
-			  while($query->have_posts()) : 
-				 $query->the_post();
-		?>
+				),				
 
-				 <h1><?php the_title() ?></h1>
-				 <div class='post-content'><?php the_content() ?></div>      
-			  
-		<?php
-			  endwhile;
-			endif;
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			if ($author_info->user_email == "mbarbaro76@gmail.com") {
 				
-			} 
+			);
+			$author_query = new WP_Query( $args2 );
+			$author_posts = $author_query->get_posts();
+			$ttl_donation = 0;
+			$donation_str = "<table style='width:50%'><thead><tr><td>Donation Date</td><td>Donation Amount</td></tr></thead>";
+			foreach ($author_posts as $ap) {
+				$date = $ap->post_date;
+				$createDate = new DateTime($date);
+				$strip = $createDate->format('m-d-Y');
+				$donation_str = $donation_str . "<tbody><tr><td>" . $strip . "</td><td><span style='margin-left:20px;'>" . money_format('$%i', $ap->gross_donation) . "<span></td></tr>";
+				//echo "<span style='margin-left:30px;'>" . $ap->gross_donation . "</span><br />";
+				$ttl_donation = $ttl_donation + $ap->gross_donation;
+			}
+			//echo "<span style='margin-left:30px;font-weight:bold;'>" . $ttl_donation . "</span><br />";
 			
-			echo '<li>' . $author_info->user_email . '</li>';
+			//if ($aid == 1) {
+				$donation_str = $donation_str . "</tbody></table>";
+				$confirm_msg = "Here are your total donations to Change Based Giving for the tax year: <strong>" . $currentyear . "</strong><br /><br /><br />" . $donation_str . "<br /><br />" . $currentyear . " Total = <strong>" . money_format('$%i', $ttl_donation) . "</strong><br /><br /><br />";
+				wp_mail( $aemail, 'Change Based Giving donations for tax year ' . $currentyear, $confirm_msg );			
+			//}
+			
 		}
-		//echo '</ul>';
+		
 	} else {
 		echo 'No results';
 	}  
@@ -97,10 +82,14 @@ function cbg_annual_donation_email() {
 ?>
 
 <form action="" method="post">
-	Tax Year: <select id="taxyear" name="taxyear">
-		<option value="2015">2015</option>
-		<option value="2016">2016</option>
-	</select>
+<?php
+	$thisyear = date("Y");
+	$taxyear = $thisyear - 1;
+	//$taxyear = 2015;
+	//echo "TAX YEAR = " . $taxyear . "<br />";
+?>
+	Tax Year: <strong><?php echo $taxyear; ?></strong> 
+	<input type="hidden" id="taxyear" name="taxyear" value="<?php echo $taxyear; ?>">
 	<br/><br/>
 	<input type="submit" name="send_annual_email" id="send_annual_email" value="Send Annual Email to All Users" />  
 </form>

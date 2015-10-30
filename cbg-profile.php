@@ -131,16 +131,17 @@ if ( is_user_logged_in() ) {
 .totaldollarcell {text-align:center;vertical-align:middle;font-weight:bold;font-size:14pt;}
 </style>
 <a href="http://www.change-based-giving.org/donate/"><img class=" size-full wp-image-928 alignright" src="http://www.change-based-giving.org/cbg/wp-content/uploads/2015/05/donatebutton.png" alt="Donate" width="112" height="40" /></a>
-<p class="pagetitles">Welcome, <?php echo $showname ?>!</p>
+<p style="font-size:16pt;color:#915324;font-weight:bold;">Welcome, <?php echo $showname ?>!</p>
 	<div class="tabs">
 		<ul class="tab-links">
 			<li id="t1" class="active"><a href="#tab1">Monetary Savings</a></li>
 			<li id="t2"><a href="#tab2">Resource Savings</a></li>
+			<li id="t3"><a href="#tab3">Total Donations</a></li>
 		</ul>  
 	
 	  <div class="tab-content">
 		  <div id="tab1" class="tab active">	
-		<div style="width:98%;">
+			<div style="width:98%;">
 			<input id="changetime" type="button" value="Go" style="float:right;margin-left:5px;" />
 			<select name="year" id="year" style="float:right;">
 <?php
@@ -447,6 +448,44 @@ if ( is_user_logged_in() ) {
 			</tr>
 		</table>	
 	</div>
+	<div id="tab3" class="tab">
+		<div style="width:98%;">
+						
+			<?php
+				
+				$paymentargs = array(				
+					'post_type' => 'payment',
+					'posts_per_page' => -1, 					
+					'meta_query' => array(
+						array(
+							'key'     => 'user_id',
+							'value'   => $user_id,						
+						),
+					),					
+				);
+				
+				$author_query = new WP_Query( $paymentargs );
+				$author_posts = $author_query->get_posts();
+				$ttl_donation = 0;
+				$donation_str = "<table style='width:50%'><thead><tr><td>Donation Date</td><td>Donation Amount</td></tr></thead>";
+				foreach ($author_posts as $ap) {
+					$date = $ap->post_date;
+					$createDate = new DateTime($date);
+					$strip = $createDate->format('m-d-Y');
+					$donation_str = $donation_str . "<tbody><tr><td>" . $strip . "</td><td><span style='margin-left:20px;'>" . money_format('$%i', $ap->gross_donation) . "<span></td></tr>";
+					//echo "<span style='margin-left:30px;'>" . $ap->gross_donation . "</span><br />";
+					$ttl_donation = $ttl_donation + $ap->gross_donation;
+				}
+				//echo "<span style='margin-left:30px;font-weight:bold;'>" . $ttl_donation . "</span><br />";
+				
+				
+				$donation_str = $donation_str . "</tbody></table>";
+				$confirm_msg = "Here are your total donations to Change Based Giving.<br /><br /><br />" . $donation_str . "<br /><br />Total = <strong>" . money_format('$%i', $ttl_donation) . "</strong><br /><br /><br />";
+				echo $confirm_msg;				
+
+			?>			
+		</div>
+	</div>
 </div>
 </div>
 <?php	
@@ -477,28 +516,50 @@ if ( is_user_logged_in() ) {
 			
 			if (m.length>2) {
 				if (t == 'tab1') {
+					$("#tab3").hide();
 					$("#tab2").hide();
 					$("#tab1").show();
-					$("#t2").removeClass('active');
+					$("#t3").removeClass('active');
+					$("#t2").removeClass('active');					
 					$("#t1").addClass('active');					
 				} else if (t == 'tab2') {
 					$("#tab1").hide();
 					$("#tab2").show();
+					$("#tab3").hide();
 					$("#t1").removeClass('active');
-					$("#t2").addClass('active');					
+					$("#t2").addClass('active');
+					$("#t3").removeClass('active');					
+				} else if (t == 'tab3') {
+					$("#tab1").hide();
+					$("#tab2").hide();
+					$("#tab3").hide();
+					$("#t1").removeClass('active');
+					$("#t2").removeClass('active');	
+					$("#t3").addClass('active');					
 				}			
 			}
 			if (y.length>2) {
 				if (t == 'tab1') {
+					$("#tab3").hide();
 					$("#tab2").hide();
 					$("#tab1").show();
+					$("#t3").removeClass('active');
 					$("#t2").removeClass('active');
 					$("#t1").addClass('active');					
 				} else if (t == 'tab2') {
 					$("#tab1").hide();
 					$("#tab2").show();
+					$("#tab3").hide();
 					$("#t1").removeClass('active');
-					$("#t2").addClass('active');					
+					$("#t2").addClass('active');
+					$("#t3").removeClass('active');					
+				} else if (t == 'tab3') {
+					$("#tab1").hide();
+					$("#tab2").hide();
+					$("#tab3").show();
+					$("#t1").removeClass('active');
+					$("#t2").removeClass('active');	
+					$("#t3").addClass('active');					
 				}
 			}		
 

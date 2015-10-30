@@ -87,6 +87,7 @@ jQuery(document).ready(function ($) {
 });
 </script>
 <?php
+	$user_id = 0;
 	if(is_user_logged_in()) {
 		global $current_user; 
 		$user_id = $current_user->ID;	
@@ -284,11 +285,12 @@ jQuery(document).ready(function ($) {
 			$B7 = get_post_meta($baseline_post->ID, 'B7', true);
 		endforeach; 
 		wp_reset_postdata();		
-?>
-		<input type="hidden" id="userid" value="<?php echo $user_id ?>" />
-<?php
-	}
 
+	}
+?>
+	<input type="hidden" id="userid" value="<?php echo $user_id ?>" />	
+<?php	
+	
 	if (is_page( 'transportation' )) {
 ?>
 	
@@ -306,14 +308,14 @@ jQuery(document).ready(function ($) {
 	  <div class="tab-content">
 		  <div id="tab1" class="tab active">
 					
-					<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-					<p class="inputs"><strong>On average, how many roundtrips do you make to work each month? (if work is not your most frequent destination, feel free to substitute something else)</strong>  <input type="text" id="trans_1" title="It may be easier to think about this as the number of weekly trips to work multiplied by four.  Also, if you go back home for lunch then return to work—make sure you consider the extra trips." style="width:60px;" value="<?php echo $B1 ?>" /><span class="errmsg" id="errmsg1"></span><br />
+					<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. You must fill in the baseline information—will only take a minute—in order to track your savings.</p>
+					<p class="inputs"><strong>On average, how many roundtrips do you make to work each month? (if work is not your most frequent destination, feel free to substitute something else)</strong>  <input type="text" id="trans_1" class="tooltips" title="It may be easier to think about this as the number of weekly trips to work multiplied by four.  Also, if you go back home for lunch then return to work—make sure you consider the extra trips." style="width:60px;" value="<?php echo $B1 ?>" /><span class="errmsg" id="errmsg1"></span><br />
 					
-					<p class="inputs"><strong>How many miles are included in roundtrip—i.e. to work and back home?</strong> <input type="text" id="trans_2" style="width:60px;" title="Use the odometer on your car to measure the distance.  Or research it online using MapQuest or Google Maps" value="<?php echo $B2 ?>" /><span class="errmsg" id="errmsg2"></span><br />
+					<p class="inputs"><strong>How many miles are included in roundtrip—i.e. to work and back home?</strong> <input type="text" id="trans_2" style="width:60px;" class="tooltips" title="Use the odometer on your car to measure the distance.  Or research it online using MapQuest or Google Maps" value="<?php echo $B2 ?>" /><span class="errmsg" id="errmsg2"></span><br />
 					
-					<p class="inputs"><strong>How many miles does your car travel per gallon (mpg)?  </strong> <input type="text" id="trans_3" style="width:60px;" title="When you fill up, reset your odometer.  When your tank is empty again, see how many miles you've gone.  Divide the miles by the number of gallons it took to refill your tank.  Or you could research this info online for the average MPG of your car's make and model." value="<?php echo $B3 ?>"/><span class="errmsg" id="errmsg3"></span><br />
+					<p class="inputs"><strong>How many miles does your car travel per gallon (mpg)?  </strong> <input type="text" id="trans_3" style="width:60px;" class="tooltips" title="When you fill up, reset your odometer.  When your tank is empty again, see how many miles you've gone.  Divide the miles by the number of gallons it took to refill your tank.  Or you could research this info online for the average MPG of your car's make and model." value="<?php echo $B3 ?>"/><span class="errmsg" id="errmsg3"></span><br />
 					
-					<p class="inputs"><strong>What is the average price of gas in your area?</strong> $  <input type="text" id="trans_4" style="width:60px;" title="This information can usually be found on the Internet (www.gasbuddy.com)" value="<?php echo $B4 ?>"/><span class="errmsg" id="errmsg4"></span> per gallon.<br />Short cut: Find average gas prices in your location by using one of the following websites: <a href="http://fuelgaugereport.aaa.com/todays-gas-prices/" target="_blank">AAA</a> or <a href="http://www.gasbuddy.com/" target="_blank">GasBuddy</a>.
+					<p class="inputs"><strong>What is the average price of gas in your area?</strong> $  <input type="text" id="trans_4" style="width:60px;" class="tooltips" title="This information can usually be found on the Internet (www.gasbuddy.com)" value="<?php echo $B4 ?>"/><span class="errmsg" id="errmsg4"></span> per gallon.<br />Short cut: Find average gas prices in your location by using one of the following websites: <a href="http://fuelgaugereport.aaa.com/todays-gas-prices/" target="_blank">AAA</a> or <a href="http://www.gasbuddy.com/" target="_blank">GasBuddy</a>.
 					
 				<br /><br />
 				<input id="trans_base" type="button" value="Calculate Baseline" onclick="calcTransportation()" /><span class="errmsg" id="errmsg5"></span>
@@ -324,7 +326,7 @@ jQuery(document).ready(function ($) {
 				</div>
 		  </div>
 		  <div id="tab2" class="tab">
-			<?php if ( is_user_logged_in() ) { ?>
+
 				
 				<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 				<p class="inputs">Fill in one or more options below. You can update your savings after each individual trip, or you can tally up your alternative transportation trips and add them whenever it suits you--e.g. weekly or monthly.</p><br />
@@ -337,16 +339,20 @@ jQuery(document).ready(function ($) {
 				<input type="button" id="trans_bankit" name="trans_bankit" value="Update Savings" onclick="calcTransSavings()" /><span class="errmsg" id="errmsg6"></span>
 				<hr />
 				<div class="baselinediv2" id="baselineresults">
-				<h5>TRANSPORTATION SAVINGS</h5><br /><br />
+				<h5>TRANSPORTATION SAVINGS</h5><br />
+			<?php if ( is_user_logged_in() ) { ?>				
 					<input type="hidden" id="transsaved_0" />	
 					<p class="inputs">Gas saved this month: <input type="text" id="transsaved_2" value="<?php echo $totgas_sr; ?>" style="width:50px;font-weight:bold;" readonly /> gallons.</p>
 					<div><strong>Transportation money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="transsaved_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $tottrans); ?></span></div>
-					<div id="transbankit_result"></div>				
+					<div id="transbankit_result"></div>		
+			<?php } else { ?>
+					<div><strong>Transportation money saved:</strong>&nbsp;&nbsp;<span id="transsaved_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>
+					
+			<?php
+					}
+				?>	
 				</div>
-			<?php } else {
-				echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
-				}
-			?>
+
 		  </div>
 	</div>	
 </div>	
@@ -479,6 +485,8 @@ jQuery(document).ready(function ($) {
 							savings1 = 0;
 						}
 						jQuery("#transsaved_0").val(savings1);
+						jQuery("#transsaved_NL").html("$" + savings1);
+						
 						jQuery("#errmsg6").hide();
 						
 						var trips1 = 0;
@@ -498,6 +506,8 @@ jQuery(document).ready(function ($) {
 						var numtrips = parseFloat(trips1) + parseFloat(trips2) + parseFloat(trips3);						
 						var gal_saved = (numtrips * jQuery("#trans_2").val()) / jQuery("#trans_3").val();						
 						jQuery("#transsaved_2").val(gal_saved);
+					
+							
 					}
 				}
 			
@@ -516,10 +526,10 @@ jQuery(document).ready(function ($) {
 	  <div class="tab-content">
 		  <div id="tab1" class="tab active">
 		  
-			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>How many showers do you take per month?</strong><input type="text" id="water_1" value="<?php echo $B1 ?>" title="Remember: this question is simply trying to help you get a handle on your resource usage; your answer does not have to be exact.  Many people, for instance, shower at least once a day [e.g. before work or school in the morning], and many people exercise a consistent number of days a week [and often take showers after a workout].  These 'habits' or 'markers' should make it pretty simple to approximate how many showers you take per month." style="width:60px;" /><span class="errmsg" id="errmsg1"></span><br /></p>
-			<p class="inputs"><strong>On average, how many minutes do you spend in the shower?  </strong> <input type="text" id="water_2" title="Time your showers for the next several days and divide the total minutes by the number of days.  For instance, if you spent a total of 60 minutes in the shower over five days, your average shower time would be ten minutes." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
-			<p class="inputs"><strong>What does one gallon of water cost from your utility?    </strong> $<input type="text" id="water_3" value="<?php echo $B3 ?>" title="Most water utilities charge a fixed amount for the first 1,000 gallons (i.e. from 1-1,000).  In Batesville, AR, for instance, the minimum fee is $8.50.  For every thousand gallons consumed after you cross the 1,000 threshold, the utility will assess a fee.  For example, in Batesville, it is $3.27 per 1,000 gallons.  So, to take a hypothetical example, let’s say you used 14,500 gallons of water in one month.  The first 1,000 gallons would cost $8.50.  Then, the remaining 13,500 gallons would cost $44.15 (13.5x$3.27).  The total water bill would be $52.65 ($8.50 minimum + $44.15). To find the amount your utility charges per gallon of water, simply divide your total bill (in this case, $52.65), by the number of total gallons used (in this case, 14,500) to get your answer--.0036 or 4/10 of a cent." style="width:60px;" /><span class="errmsg" id="errmsg3"></span><input type="button" id="water_shortcut" value="Use Shortcut" /><br />Short cut: use national average of $.006 (Source: <a href="http://www.epa.gov/watersense/our_water/how_works.html#inputs" target="_blank">EPA guidelines</a>)</p>
+			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. You must fill in the baseline information—will only take a minute—in order to track your savings.</p>
+			<p class="inputs"><strong>How many showers do you take per month?</strong><input type="text" id="water_1" value="<?php echo $B1 ?>" class="tooltips" title="Remember: this question is simply trying to help you get a handle on your resource usage; your answer does not have to be exact.  Many people, for instance, shower at least once a day [e.g. before work or school in the morning], and many people exercise a consistent number of days a week [and often take showers after a workout].  These 'habits' or 'markers' should make it pretty simple to approximate how many showers you take per month." style="width:60px;" /><span class="errmsg" id="errmsg1"></span><br /></p>
+			<p class="inputs"><strong>On average, how many minutes do you spend in the shower?  </strong> <input type="text" id="water_2" class="tooltips" title="Time your showers for the next several days and divide the total minutes by the number of days.  For instance, if you spent a total of 60 minutes in the shower over five days, your average shower time would be ten minutes." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
+			<p class="inputs"><strong>What does one gallon of water cost from your utility?    </strong> $<input type="text" id="water_3" value="<?php echo $B3 ?>" class="tooltips" title="Most water utilities charge a fixed amount for the first 1,000 gallons (i.e. from 1-1,000).  In Batesville, AR, for instance, the minimum fee is $8.50.  For every thousand gallons consumed after you cross the 1,000 threshold, the utility will assess a fee.  For example, in Batesville, it is $3.27 per 1,000 gallons.  So, to take a hypothetical example, let’s say you used 14,500 gallons of water in one month.  The first 1,000 gallons would cost $8.50.  Then, the remaining 13,500 gallons would cost $44.15 (13.5x$3.27).  The total water bill would be $52.65 ($8.50 minimum + $44.15). To find the amount your utility charges per gallon of water, simply divide your total bill (in this case, $52.65), by the number of total gallons used (in this case, 14,500) to get your answer--.0036 or 4/10 of a cent." style="width:60px;" /><span class="errmsg" id="errmsg3"></span><input type="button" id="water_shortcut" value="Use Shortcut" /><br />Short cut: use national average of $.006 (Source: <a href="http://www.epa.gov/watersense/our_water/how_works.html#inputs" target="_blank">EPA guidelines</a>)</p>
 		<br />
 		<input id="water_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcWater()" /><span class="errmsg" id="errmsg5"></span>
 		<hr />
@@ -530,7 +540,7 @@ jQuery(document).ready(function ($) {
 		</div>		
 	</div>
 	<div id="tab2" class="tab">
-	<?php if ( is_user_logged_in() ) { ?>	
+	
 		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">Fill in one or more options below. This money and water saving strategy uses monthly averages.</p><br />
@@ -542,16 +552,20 @@ jQuery(document).ready(function ($) {
 		<input type="button" id="water_bankit" name="water_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcWaterSavings()" /><span class="errmsg" id="errmsg6"></span>
 		<hr />
 		<div class="baselinediv2" id="baselineresults">
-		<h5>WATER SAVINGS</h5>	
+		<h5>WATER SAVINGS</h5>
+		<?php if ( is_user_logged_in() ) { ?>
 			<p class="inputs">Gallons of water saved this month:  <input type="text" id="watersaved_2" value="<?php echo $totwater_sr; ?>" style="width:50px;font-weight:bold;" readonly /></p> 
 					
 			<div><strong>Water money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="watersaved_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totwater); ?></span></div>		
-			<div id="waterbankit_result"></div>			
+			<div id="waterbankit_result"></div>	
+		<?php } else { ?>
+			<div><strong>Water money saved:</strong>&nbsp;&nbsp;<span id="watersaved_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>	
+
+		<?php
+			}
+		?>
 		</div>
-	<?php } else {
-		echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
-		}
-	?>		
+		
 	</div>
 </div>
 </div>
@@ -674,6 +688,7 @@ jQuery(document).ready(function ($) {
 				C5 = 0;
 			}			
 			jQuery("#watersaved_1").val(C5);
+			jQuery("#watersaved_NL").html("$" + C5);
 			
 			var C6 = 0;
 			if (jQuery("#waterchange_2").val().length === 0 && jQuery("#waterchange_1").val().length > 0) {
@@ -711,11 +726,11 @@ jQuery(document).ready(function ($) {
 	  <div class="tab-content">
 		  <div id="tab1" class="tab active">
 		  
-			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>What is your average utility bill during the summer months?</strong> $<input type="text" id="cooling_4" title="Look at your statements from last year's warmest months (when you were likely using air conditioning); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br />
+			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. You must fill in the baseline information—will only take a minute—in order to track your savings.</p>
+			<p class="inputs"><strong>What is your average utility bill during the summer months?</strong> $<input type="text" id="cooling_4" class="tooltips" title="Look at your statements from last year's warmest months (when you were likely using air conditioning); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br />
 			
 			
-			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="cooling_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
+			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="cooling_2" class="tooltips" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
 			
 			<br /><br />			
 			<input id="cooling_base" type="button" value="Save Cooling Usage >>" style="font-size:14pt;" />
@@ -724,7 +739,7 @@ jQuery(document).ready(function ($) {
 		<br />				
 	</div>
 	<div id="tab2" class="tab">	
-	<?php if ( is_user_logged_in() ) { ?>	
+	
 		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">This month I raised my thermostat setting by an average of <input id="cooling_5" style="width:60px;" /> degrees Fahrenheit.  After the change, my thermostat setting was still over 75 degrees Fahrenheit. (please select yes or no below)
@@ -734,24 +749,30 @@ jQuery(document).ready(function ($) {
 		<?php
 			cbg_state_dropdown();
 		?>
-		<br /><br />
+		<br />
 		<span class="errmsg" id="errmsg5"></span></p>
-		<p><input type="button" id="cooling_bankit" name="cooling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcCoolingSavings()" /><span class="errmsg" id="errmsg6"></span></p><br />
+		<p><input type="button" id="cooling_bankit" name="cooling_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcCoolingSavings()" /><span class="errmsg" id="errmsg6"></span></p>
 		<hr />
 		<div class="baselinediv2" id="baselineresults">
 			
-			<h5>COOLING SAVINGS</h5>			
+			<h5>COOLING SAVINGS</h5>	
+			<?php if ( is_user_logged_in() ) { ?>
 				<div><strong>Cooling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="coolingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totcooling); ?></span></div>		
-				<br /><br />
-				<a href="#" id="clickcoolingass1">Our assumptions</a><div id="coolingass1" style="display:none;margin-top:15px;">After consulting several sources, including the Department of Energy, we concluded that a person can expect—on average--to lower his/her utility bill by 3% if the temperature remains above 75 degrees or 1% if below 75 degrees.</div></p>
+
 				<div id="coolingbankit_result"></div>	
 				<input type="hidden" id="coolingchange_1" />
+		<?php } else { ?>
+				<div><strong>Cooling money saved:</strong>&nbsp;&nbsp;<span id="coolingchange_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>		
 			
+		<?php
+			}
+		?>				
+				<br /><br />
+				<a href="javascript:void(0)" id="clickcoolingass1">Our assumptions</a><div id="coolingass1" style="display:none;margin-top:15px;">After consulting several sources, including the Department of Energy, we concluded that a person can expect—on average--to lower his/her utility bill by 3% per degree if the temperature remains above 75 degrees or 1% per degree if below 75 degrees.</div>
+
+				
 		</div>	
-	<?php } else {
-		echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
-		}
-	?>		
+	
 	</div>	
 </div>
 </div>
@@ -843,6 +864,8 @@ jQuery(document).ready(function ($) {
 					}
 					
 					jQuery("#coolingchange_3").val(C3);
+					jQuery("#coolingchange_NL").html("$" + C3);
+					
 					var stateprice = jQuery("#state_electric").val()/100;
 					
 					var kwh = jQuery("#coolingchange_3").val()/stateprice;
@@ -865,11 +888,11 @@ jQuery(document).ready(function ($) {
 	  <div class="tab-content">
 		  <div id="tab1" class="tab active">
 			
-			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>What is your average utility bill for heating during the winter months?</strong> $<input type="text" id="heating_4" title="Look at your statements from last year's coolest months (when you were likely using heat); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
+			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. You must fill in the baseline information—will only take a minute—in order to track your savings.</p>
+			<p class="inputs"><strong>What is your average utility bill for heating during the winter months?</strong> $<input type="text" id="heating_4" class="tooltips" title="Look at your statements from last year's coolest months (when you were likely using heat); add the totals together and divide by the number of months under consideration." value="<?php echo $B4 ?>" style="width:60px;" /><span class="errmsg" id="errmsg4"></span><br /></p>
 			
 			
-			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="heating_2" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
+			<p class="inputs"><strong>What is your utility's monthly service charge?  </strong> $<input type="text" id="heating_2" class="tooltips" title="Beyond other fees and the cost of kilo-watt hours consumed, most utilities charge a baseline, monthly fee.  This should be clearly indicated on your bill." value="<?php echo $B2 ?>" style="width:60px;" /><span class="errmsg" id="errmsg2"></span><br />
 			</p>
 			
 			
@@ -878,7 +901,7 @@ jQuery(document).ready(function ($) {
 		<br />		
 	</div>
 	<div id="tab2" class="tab">		
-		<?php if ( is_user_logged_in() ) { ?>
+
 		
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">This month I lowered my thermostat setting by an average of <input id="heating_5" style="width:60px;" /> degrees Fahrenheit. <span class="errmsg" id="errmsg5"></span></p>
@@ -893,18 +916,22 @@ jQuery(document).ready(function ($) {
 		<hr />
 		<div class="baselinediv2" id="baselineresults">
 		<h5>HEATING SAVINGS</h5>
-
+		<?php if ( is_user_logged_in() ) { ?>
 			
 			<div><strong>Heating money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="heatingchange_3" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totheating); ?></span></div>				
-			<br /><br />
-			<a href="#" id="clickheatingass1">Our assumptions</a><div id="heatingass1" style="display:none;margin-top:15px;">According to several sources, including the Department of Energy, a person can expect to lower his/her utility bill (models account for various types of heating sources, i.e. electric heat pumps, natural gas) by 1%-3% per degree change.  We use the mean— 2% per degree change.</div></p>
+			
+
 			<div id="heatingbankit_result"></div>	
 			<input type="hidden" id="heatingchange_1" />
-		</div>	
-	<?php } else {
-		echo "<div style='color:red;font-style:italic;'>You must be logged in to use this tool.</div>";
+	<?php } else { ?>
+			<div><strong>Heating money saved:</strong>&nbsp;&nbsp;<span id="heatingchange_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>				
+		
+	<?php
 		}
-	?>			
+	?>	
+					<br /><br /><a href="javascript:void(0)" id="clickheatingass1">Our assumptions</a><div id="heatingass1" style="display:none;margin-top:15px;">According to several sources, including the Department of Energy, a person can expect to lower his/her utility bill (models account for various types of heating sources, i.e. electric heat pumps, natural gas) by 1%-3% per degree change.  We use the mean— 2% per degree change.</div></p>
+		</div>	
+		
 	</div>
 </div>
 </div>
@@ -990,6 +1017,7 @@ jQuery(document).ready(function ($) {
 					var C3 = (jQuery("#heating_4").val() - jQuery("#heating_2").val()) * jQuery("#heating_5").val() * 0.02;
 					
 					jQuery("#heatingchange_3").val(C3);
+					jQuery("#heatingchange_NL").html("$" + C3);
 					
 					jQuery('#electric_heat_cb').click(function () {
 						if (this.checked) {
@@ -1019,10 +1047,9 @@ jQuery(document).ready(function ($) {
 		</ul>  
 	
 	  <div class="tab-content">
-		  <div id="tab1" class="tab active">
-			
-			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
-			<p class="inputs"><strong>On average, how much do you spend per month on groceries?</strong> $<input type="text" id="grocery_1" title="Take a look at your grocery bills (thumb through paper receipts or pull up your on-line banking statement) over the last several months.  For example, if you consider six months’ worth of spending, add all six months’ spending together and divide that total by six to get your average monthly spending." value="<?php echo $B1 ?>" style="width:60px;" /><span class="errmsg" id="errmsg1"></span><br />
+		  <div id="tab1" class="tab active">			
+			<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information. This baseline is NOT required; rather, it is for your information only.  Feel free to SKIP immediately to the savings tab.</p>
+			<p class="inputs"><strong>On average, how much do you spend per month on groceries?</strong> $<input type="text" id="grocery_1" class="tooltips" title="Take a look at your grocery bills (thumb through paper receipts or pull up your on-line banking statement) over the last several months.  For example, if you consider six months’ worth of spending, add all six months’ spending together and divide that total by six to get your average monthly spending." value="<?php echo $B1 ?>" style="width:60px;" /><span class="errmsg" id="errmsg1"></span><br />
 			</p>
 		<br /><br />				
 		<input id="grocery_base" type="button" value="Calculate your Baseline >>" style="font-size:14pt;" onclick="calcGrocery()" /><span class="errmsg" id="errmsg16"></span>
@@ -1034,20 +1061,29 @@ jQuery(document).ready(function ($) {
 
 	</div>
 	<div id="tab2" class="tab">
-		
+
+		<p style="margin-bottom:15px;font-style:italic;">Hover over textboxes for additional information.</p>
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
-		<p class="inputs"><strong>I used several coupons and saved $ <input id="grocery_2" title="Remember: the tool will allow you to update your savings each time you use coupons." style="width:60px;" />.</strong><br /> 
+		
+		<p class="inputs"><strong>I used several coupons and saved $ <input id="grocery_2" class="tooltips" title="Remember: the tool will allow you to update your savings each time you use coupons." style="width:60px;" />.</strong><br /> 
 		<span class="errmsg" id="errmsg2"></span></p>
-		<p class="inputs"><strong>I identified several items that for health-related/nutritional or simple cost reasons <i>I elected not to purchase</i>,<br />and I saved $ <input id="grocery_3" title="Remember: the tool will allow you to update your healthy living/simple living savings each time you go shopping." style="width:60px;" />.</strong><br />
+		<p class="inputs"><strong>I identified several items that for health-related/nutritional or simple cost reasons <i>I elected not to purchase</i>,<br />and I saved $ <input id="grocery_3" class="tooltips" title="Remember: the tool will allow you to update your healthy living/simple living savings each time you go shopping." style="width:60px;" />.</strong><br />
 		<span class="errmsg" id="errmsg3"></span></p>
+		<p class="inputs"><strong><a href="javascript:void(0)" class="tooltips" title="Each week, try to skip a junk food item, e.g. chips, cookies or other processed snacks.  Eat one less portion of meat (and reap the environmental and health benefits).  If you are not into coupon cutting, most stores now have a handy app that enables you to save money on each shopping trip.  Consider skipping sugary drinks, especially sodas, one week a month.">***Savings Tips***</a></strong><br /><br /></p>			
 		<p><input type="button" id="grocery_bankit" name="grocery_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcGrocerySavings()" /><span class="errmsg" id="errmsg4"></span></p>
+	
 		<hr />		
 		<div class="baselinediv2" id="baselineresults">
 		<h5>GROCERY SHOPPING SAVINGS</h5>
-			
+	<?php if ( is_user_logged_in() ) { ?>			
 			<div><strong>Grocery shopping money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="grocerychange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totgrocery); ?></span></div>				
 						
-			<div id="grocerybankit_result"></div>		
+			<div id="grocerybankit_result"></div>	
+	<?php } else { ?>
+			<div><strong>Grocery shopping money saved:</strong>&nbsp;&nbsp;<span id="grocerychange_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>				
+	<?php
+		}
+	?>				
 		</div>		
 	
 	</div>
@@ -1105,6 +1141,7 @@ jQuery(document).ready(function ($) {
 					}					
 					var C2 = grocery2 + grocery3;
 					jQuery("#grocerychange_1").val(C2);
+					jQuery("#grocerychange_NL").html("$" + C2);
 				}
 				
 			}
@@ -1148,11 +1185,17 @@ jQuery(document).ready(function ($) {
 		<hr />		
 		<div class="baselinediv2" id="baselineresults">
 		<h5>ENTERTAINMENT/RECREATION SAVINGS</h5>	
+	<?php if ( is_user_logged_in() ) { ?>		
 			<div><strong>Entertainment/Recreation money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="entertainchange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totentertainmentrecreation); ?></span></div>				
 
 				
 				<div id="entertain_bankit_result"></div>
-		
+	<?php } else { ?>
+			<div><strong>Entertainment/Recreation money saved:</strong>&nbsp;&nbsp;<span id="entertainchange_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>				
+
+	<?php
+		}
+	?>			
 		</div>
    
 	</div>
@@ -1233,7 +1276,7 @@ jQuery(document).ready(function ($) {
 			var C1 = (parseFloat(E1) + parseFloat(E2) + parseFloat(E3) + parseFloat(E4)).toFixed(2);
 			jQuery("#entertainchange_1").val(C1);
 			
-			
+			jQuery("#entertainchange_NL").html("$" + C1);
 		}
    </script>
 <?php	
@@ -1265,7 +1308,7 @@ elseif (is_page( 'appliances' )) {
 		</div>			
 	</div>
 	<div id="tab2" class="tab">
-	
+
 		<div style="text-align:right;"><?php cbg_change_savings_date(); ?></div>
 		<p class="inputs">I replaced my current/older refrigerator with an energy star refrigerator. Use the <a href="https://www.energystar.gov/index.cfm?fuseaction=refrig.calculator" target="_blank">Energy Star Calculator</a> to figure the new annual cost.</p><br />
 		<p class="inputs"><strong>The new estimated annual cost to run my new refrigerator is:</strong> $<input type="text" id="appliance_2" value="<?php echo $newfridge ?>" /><span class="errmsg" id="errmsg2"></span></p><br />
@@ -1277,12 +1320,18 @@ elseif (is_page( 'appliances' )) {
 		<p><input type="button" id="appliance_bankit" name="appliance_bankit" value="Update your Savings! >>" style="font-size:14pt;" onclick="calcApplianceSavings()" /><span class="errmsg" id="errmsg3"></span></p>
 		<hr />		
 		<div class="baselinediv2" id="baselineresults">
-		<h5>APPLIANCE SAVINGS</h5>		
+		<h5>APPLIANCE SAVINGS</h5>	
+	<?php if ( is_user_logged_in() ) { ?>			
 			<div><strong>Appliance money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="appliancechange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totappliance); ?></span></div>				
 
 				
 				<div id="appliance_bankit_result"></div>
 				<input type="hidden" id="appliancechange_2" />
+	<?php } else {  ?>
+			<div><strong>Appliance money saved:</strong>&nbsp;&nbsp;<span id="appliancechange_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>				
+	<?php
+	}
+	?>					
 		</div>
    
 	</div>
@@ -1335,7 +1384,9 @@ elseif (is_page( 'appliances' )) {
 				} else {
 					var C1 = jQuery("#appliance_2").val()/12;
 					var C2 = (jQuery("#appliance_1").val()/12)-C1;
-					jQuery("#appliancechange_1").val(C2);
+					var rndC2 = Math.round(C2 * 100) / 100;
+					jQuery("#appliancechange_1").val(rndC2);
+					jQuery("#appliancechange_NL").html("$" + rndC2);
 					
 					var stateprice = jQuery("#state_electric").val()/100;
 					var kwh = C2/stateprice;
@@ -1374,11 +1425,18 @@ elseif (is_page( 'recycling' )) {
 		<hr />		
 		<div class="baselinediv2" id="baselineresults">
 		<h5>RECYCLING SAVINGS</h5>		
+		
+	<?php if ( is_user_logged_in() ) { ?>		
+		
 			<div><strong>Recycling money saved this month:</strong>&nbsp;&nbsp;<span style="font-size:18pt;font-weight:bold;color:#688571;">$</span><span id="recyclingchange_1" style="color:#688571;font-size:18pt;font-weight:bold;"><?php echo money_format('%i', $totrecycling); ?></span></div>				
 
 				
 				<div id="recycling_bankit_result"></div>
-		
+	<?php } else { ?>
+		<div><strong>Recycling money saved:</strong>&nbsp;&nbsp;<span id="recyclingchange_NL" style="color:#688571;font-size:18pt;font-weight:bold;"></span></div>
+	<?php	
+		}
+	?>			
 		</div>
    
 	</div>
@@ -1407,7 +1465,7 @@ elseif (is_page( 'recycling' )) {
 		function calcRecyclingSavings() {
 			var C1 = jQuery("#recycling_1").val();
 			jQuery("#recyclingchange_1").val(C1);
-			
+			jQuery("#recyclingchange_NL").html("$" + C1);
 			
 		}
    </script>
