@@ -726,12 +726,12 @@ jQuery(document).ready(function ($) {
 					C5 = jQuery("#waterbaseline_3").val() - (jQuery("#water_1").val() * (jQuery("#water_2").val() - jQuery("#waterchange_1").val()) * jQuery("#waterchange_2").val() * jQuery("#water_3").val() );
 			}
 			
-			C5 = C5.toFixed(2);
+			C5 = parseFloat(C5).toFixed(2);
 			if (C5 < 0) {
 				C5 = 0;
 			}			
-			jQuery("#watersaved_1").val(C5.toFixed(2));
-			jQuery("#watersaved_NL").html("$" + C5.toFixed(2));
+			jQuery("#watersaved_1").val(parseFloat(C5).toFixed(2));
+			jQuery("#watersaved_NL").html("$" + parseFloat(C5).toFixed(2));
 			
 			var C6 = 0;
 			if (jQuery("#waterchange_2").val().length === 0 && jQuery("#waterchange_1").val().length > 0) {
@@ -1437,9 +1437,9 @@ jQuery(document).ready(function ($) {
 			}
 			
 			var C1 = (parseFloat(E1) + parseFloat(E2) + parseFloat(E3) + parseFloat(E4)).toFixed(2);
-			jQuery("#entertainchange_1").val(C1.toFixed(2));
+			jQuery("#entertainchange_1").val(parseFloat(C1).toFixed(2));
 			
-			jQuery("#entertainchange_NL").html("$" + C1.toFixed(2));
+			jQuery("#entertainchange_NL").html("$" + parseFloat(C1).toFixed(2));
 		}
    </script>
 <?php	
